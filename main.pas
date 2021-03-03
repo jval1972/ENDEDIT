@@ -33,7 +33,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, ComCtrls, Buttons, Clipbrd, ExtDlgs, pngimage, xTGA, zBitmap,
-  Menus, ImgList, jpeg, StdCtrls, ee_undo, ee_filemenuhistory;
+  Menus, ImgList, jpeg, StdCtrls, ee_undo, ee_filemenuhistory, ee_screen;
 
 type
   TForm1 = class(TForm)
@@ -119,6 +119,7 @@ type
     undoManager: TUndoRedoManager;
     filemenuhistory: TFileMenuHistory;
     ffilename: string;
+    escreen: TEndScreen;
     procedure Idle(Sender: TObject; var Done: Boolean);
     procedure Hint(Sender: TObject);
     procedure UpdateEnable;
@@ -154,7 +155,16 @@ var
   doCreate: boolean;
 begin
   buffer := TBitmap.Create;
+  buffer.Width := 640;
+  buffer.Height := 200;
+  buffer.PixelFormat := pf32bit;
+
   drawbuffer := TBitmap.Create;
+  drawbuffer.Width := 640;
+  drawbuffer.Height := 400;
+  drawbuffer.PixelFormat := pf32bit;
+
+  escreen := TEndScreen.Create;
 
   mousedown := False;
 
@@ -234,6 +244,8 @@ begin
 
   buffer.Free;
   drawbuffer.Free;
+
+  escreen.Free;
 end;
 
 procedure TForm1.Idle(Sender: TObject; var Done: Boolean);
@@ -303,8 +315,8 @@ end;
 
 procedure TForm1.InvalidatePaintBox;
 begin
-  PaintBox1.Width := buffer.Width;
-  PaintBox1.Height := buffer.Height;
+  PaintBox1.Width := drawbuffer.Width;
+  PaintBox1.Height := drawbuffer.Height;
   CreateDrawBuffer;
   PaintBox1.Invalidate;
 end;
@@ -351,10 +363,11 @@ end;
 
 procedure TForm1.CreateDrawBuffer;
 begin
-  drawbuffer.Width := buffer.Width;
-  drawbuffer.Height := buffer.Height;
+  escreen.GetBitmap(buffer, false);
+  drawbuffer.Width := 640;
+  drawbuffer.Height := 400;
 
-  drawbuffer.Canvas.Draw(0, 0, buffer);
+  drawbuffer.Canvas.StretchDraw(Rect(0, 0, drawbuffer.Width, drawbuffer.Height), buffer);
 end;
 
 procedure TForm1.Undo1Click(Sender: TObject);
@@ -376,6 +389,7 @@ end;
 
 procedure TForm1.DoCreateNew;
 begin
+  escreen.Clear;
   undoManager.Clear;
   SetFileName('');
   changed := False;
@@ -384,10 +398,12 @@ end;
 procedure TForm1.DoLoadFromStream(const s: TStream);
 begin
   needsupdate := True;
+  escreen.LoadFromStream(s);
 end;
 
 procedure TForm1.DoSaveToStream(const s: TStream);
 begin
+  escreen.SaveToStream(s);
 end;
 
 procedure TForm1.DoLoadUndo(const s: TStream);

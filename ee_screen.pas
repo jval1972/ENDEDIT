@@ -114,6 +114,7 @@ constructor TEndScreen.Create;
 begin
   Inherited;
   GetMem(data, SizeOf(endscreen_t));
+  Clear;
 end;
 
 destructor TEndScreen.Destroy;
@@ -287,7 +288,7 @@ begin
     cx := (pe_char.code - 1) mod 16;
     cy := (pe_char.code - 1) div 16;
     if blink then
-      doblink := pe_char.flags shr 7 = 0
+      doblink := pe_char.flags shr 7 <> 0
     else
       doblink := false;
     for iy := 0 to 7 do
@@ -301,9 +302,9 @@ begin
         else
         begin
           if doblink then
-            buf[sp] := fcolor
-          else
             buf[sp] := bcolor
+          else
+            buf[sp] := fcolor
         end;
         inc(sp);
         inc(fp);
