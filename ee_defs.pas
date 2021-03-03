@@ -55,6 +55,8 @@ var
   opt_filemenuhistory7: bigstring_t;
   opt_filemenuhistory8: bigstring_t;
   opt_filemenuhistory9: bigstring_t;
+  opt_showgrid: boolean = True;
+  opt_zoom: integer = 0;
 
 function bigstringtostring(const bs: bigstring_p): string;
 
@@ -75,7 +77,7 @@ type
   end;
 
 const
-  NUMSETTINGS = 11;
+  NUMSETTINGS = 14;
 
 var
   Settings: array[0..NUMSETTINGS - 1] of TSettingItem = (
@@ -133,6 +135,21 @@ var
       desc: 'FILEMENUHISTORY9';
       typeof: tstBigString;
       location: @opt_filemenuhistory9;
+    ),
+    (
+      desc: '[Options]';
+      typeof: tstDevider;
+      location: nil;
+    ),
+    (
+      desc: 'SHOWGRID';
+      typeof: tstBoolean;
+      location: @opt_showgrid;
+    ),
+    (
+      desc: 'ZOOM';
+      typeof: tstInteger;
+      location: @opt_zoom;
     )
   );
 

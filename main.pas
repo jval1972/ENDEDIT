@@ -35,6 +35,13 @@ uses
   Dialogs, ExtCtrls, ComCtrls, Buttons, Clipbrd, ExtDlgs, pngimage, xTGA, zBitmap,
   Menus, ImgList, jpeg, StdCtrls, ee_undo, ee_filemenuhistory, ee_screen;
 
+const
+  MINZOOM = 0;
+  MAXZOOM = 20;
+
+const
+  MOUSEWHEELTIMEOUT = 150; // Msecs until next mouse wheel even to be proccessed
+
 type
   TForm1 = class(TForm)
     Panel1: TPanel;
@@ -86,6 +93,8 @@ type
     NewSpeedButton1: TSpeedButton;
     UndoSpeedButton1: TSpeedButton;
     RedoSpeedButton1: TSpeedButton;
+    ZoomOutSpeedButton1: TSpeedButton;
+    ZoomInSpeedButton1: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure PaintBox1Paint(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -109,6 +118,12 @@ type
     procedure New1Click(Sender: TObject);
     procedure Save1Click(Sender: TObject);
     procedure SaveAs1Click(Sender: TObject);
+    procedure FormMouseWheelDown(Sender: TObject; Shift: TShiftState;
+      MousePos: TPoint; var Handled: Boolean);
+    procedure FormMouseWheelUp(Sender: TObject; Shift: TShiftState;
+      MousePos: TPoint; var Handled: Boolean);
+    procedure ZoomIn1Click(Sender: TObject);
+    procedure ZoomOut1Click(Sender: TObject);
   private
     { Private declarations }
     buffer: TBitmap;
@@ -120,6 +135,8 @@ type
     filemenuhistory: TFileMenuHistory;
     ffilename: string;
     escreen: TEndScreen;
+    zoom: integer;
+    flastzoomwheel: int64;
     procedure Idle(Sender: TObject; var Done: Boolean);
     procedure Hint(Sender: TObject);
     procedure UpdateEnable;
@@ -171,15 +188,17 @@ begin
   drawbuffer.Height := 400;
   drawbuffer.PixelFormat := pf32bit;
 
+  flastzoomwheel := GetTickCount;
+
   escreen := TEndScreen.Create;
 
   mousedown := False;
 
-  ee_LoadSettingFromFile(ChangeFileExt(ParamStr(0), '.ini'));
-
   undoManager := TUndoRedoManager.Create;
   undoManager.OnLoadFromStream := DoLoadUndo;
   undoManager.OnSaveToStream := DoSaveUndo;
+
+  ee_LoadSettingFromFile(ChangeFileExt(ParamStr(0), '.ini'));
 
   filemenuhistory := TFileMenuHistory.Create(self);
   filemenuhistory.MenuItem0 := HistoryItem0;
@@ -206,6 +225,9 @@ begin
   filemenuhistory.AddPath(bigstringtostring(@opt_filemenuhistory0));
 
   ffilename := '';
+
+  GridButton1.Down := opt_showgrid;
+  zoom := GetIntInRange(opt_zoom, MINZOOM, MAXZOOM);
 
   doCreate := True;
   if ParamCount > 0 then
@@ -245,6 +267,8 @@ begin
   stringtobigstring(filemenuhistory.PathStringIdx(7), @opt_filemenuhistory7);
   stringtobigstring(filemenuhistory.PathStringIdx(8), @opt_filemenuhistory8);
   stringtobigstring(filemenuhistory.PathStringIdx(9), @opt_filemenuhistory9);
+  opt_showgrid := GridButton1.Down;
+  opt_zoom := zoom;
   ee_SaveSettingsToFile(ChangeFileExt(ParamStr(0), '.ini'));
 
   filemenuhistory.Free;
@@ -268,6 +292,8 @@ begin
   RedoSpeedButton1.Enabled := undoManager.CanRedo;
   Paste1.Enabled := Clipboard.HasFormat(CF_BITMAP);
   PasteSpeedButton1.Enabled := Clipboard.HasFormat(CF_BITMAP);
+  ZoomInSpeedButton1.Enabled := zoom < MAXZOOM;
+  ZoomOutSpeedButton1.Enabled := zoom > MINZOOM;
   if needsupdate then
   begin
     InvalidatePaintBox;
@@ -322,9 +348,9 @@ end;
 
 procedure TForm1.InvalidatePaintBox;
 begin
+  CreateDrawBuffer;
   PaintBox1.Width := drawbuffer.Width;
   PaintBox1.Height := drawbuffer.Height;
-  CreateDrawBuffer;
   PaintBox1.Invalidate;
 end;
 
@@ -371,8 +397,8 @@ end;
 procedure TForm1.CreateDrawBuffer;
 begin
   escreen.GetBitmap(buffer, false);
-  drawbuffer.Width := 640;
-  drawbuffer.Height := 400;
+  drawbuffer.Width := 640 + 64 * zoom;
+  drawbuffer.Height := 400 + 40 * zoom;
 
   drawbuffer.Canvas.StretchDraw(Rect(0, 0, drawbuffer.Width, drawbuffer.Height), buffer);
 end;
@@ -532,6 +558,66 @@ procedure TForm1.SaveAs1Click(Sender: TObject);
 begin
   if SaveDialog1.Execute then
     DoSaveToFile(SaveDialog1.FileName);
+end;
+
+procedure TForm1.FormMouseWheelDown(Sender: TObject; Shift: TShiftState;
+  MousePos: TPoint; var Handled: Boolean);
+var
+  pt: TPoint;
+  r: TRect;
+  tick: int64;
+begin
+  tick := GetTickCount;
+  if tick <= flastzoomwheel + MOUSEWHEELTIMEOUT then
+    Exit;
+  flastzoomwheel := tick;
+  pt := PaintBox1.Parent.ScreenToClient(MousePos);
+  r := PaintBox1.ClientRect;
+  if r.Right > ScrollBox1.Width then
+    r.Right := ScrollBox1.Width;
+  if r.Bottom > ScrollBox1.Height then
+    r.Bottom := ScrollBox1.Height;
+  if PtInRect(r, pt) then
+    ZoomOut1Click(Sender);
+end;
+
+procedure TForm1.FormMouseWheelUp(Sender: TObject; Shift: TShiftState;
+  MousePos: TPoint; var Handled: Boolean);
+var
+  pt: TPoint;
+  r: TRect;
+  tick: int64;
+begin
+  tick := GetTickCount;
+  if tick <= flastzoomwheel + MOUSEWHEELTIMEOUT then
+    Exit;
+  flastzoomwheel := tick;
+  pt := PaintBox1.Parent.ScreenToClient(MousePos);
+  r := PaintBox1.ClientRect;
+  if r.Right > ScrollBox1.Width then
+    r.Right := ScrollBox1.Width;
+  if r.Bottom > ScrollBox1.Height then
+    r.Bottom := ScrollBox1.Height;
+  if PtInRect(r, pt) then
+    ZoomIn1Click(Sender);
+end;
+
+procedure TForm1.ZoomIn1Click(Sender: TObject);
+begin
+  if zoom < MAXZOOM then
+  begin
+    inc(zoom);
+    needsupdate := True;
+  end;
+end;
+
+procedure TForm1.ZoomOut1Click(Sender: TObject);
+begin
+  if zoom > MINZOOM then
+  begin
+    dec(zoom);
+    needsupdate := True;
+  end;
 end;
 
 end.
