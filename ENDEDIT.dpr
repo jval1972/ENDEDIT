@@ -43,7 +43,8 @@ uses
   ee_binary in 'ee_binary.pas',
   ee_filemenuhistory in 'ee_filemenuhistory.pas',
   ee_undo in 'ee_undo.pas',
-  ee_defs in 'ee_defs.pas';
+  ee_defs in 'ee_defs.pas',
+  ee_dosfont in 'ee_dosfont.pas';
 
 {$R *.res}
 
