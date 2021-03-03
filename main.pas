@@ -108,7 +108,6 @@ type
       Y: Integer);
   private
     { Private declarations }
-    glneedrecalc: boolean;
     buffer: TBitmap;
     drawbuffer: TBitmap;
     mousedown: boolean;
@@ -171,7 +170,6 @@ begin
   begin
     buffer.LoadFromClipboardFormat(CF_BITMAP, ClipBoard.GetAsHandle(cf_Bitmap), 0);
     InvalidatePaintBox;
-    glneedrecalc := True;
   end;
 end;
 
@@ -228,7 +226,6 @@ begin
       p.Free;
     end;
     InvalidatePaintBox;
-    glneedrecalc := True;
   end;
 end;
 
