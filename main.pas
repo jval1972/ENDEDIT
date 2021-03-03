@@ -40,7 +40,6 @@ const
   MAXZOOM = 20;
 
 const
-  MOUSEWHEELTIMEOUT = 150; // Msecs until next mouse wheel even to be proccessed
 
 type
   TForm1 = class(TForm)
@@ -137,6 +136,7 @@ type
     escreen: TEndScreen;
     zoom: integer;
     flastzoomwheel: int64;
+    blink: boolean;
     procedure Idle(Sender: TObject; var Done: Boolean);
     procedure Hint(Sender: TObject);
     procedure UpdateEnable;
@@ -193,6 +193,7 @@ begin
   escreen := TEndScreen.Create;
 
   mousedown := False;
+  blink := False;
 
   undoManager := TUndoRedoManager.Create;
   undoManager.OnLoadFromStream := DoLoadUndo;
@@ -356,6 +357,7 @@ end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
+  blink := not blink;
   UpdateEnable;
   InvalidatePaintBox;
 end;
@@ -396,7 +398,7 @@ end;
 
 procedure TForm1.CreateDrawBuffer;
 begin
-  escreen.GetBitmap(buffer, false);
+  escreen.GetBitmap(buffer, blink);
   drawbuffer.Width := 640 + 64 * zoom;
   drawbuffer.Height := 400 + 40 * zoom;
 
@@ -424,6 +426,7 @@ procedure TForm1.DoCreateNew;
 begin
   escreen.Clear;
   undoManager.Clear;
+  blink := False;
   SetFileName('');
   changed := False;
 end;
@@ -461,6 +464,7 @@ begin
   end;
 
   undoManager.Clear;
+  blink := False;
   Result := True;
   fs := TFileStream.Create(aname, fmOpenRead);
   try
