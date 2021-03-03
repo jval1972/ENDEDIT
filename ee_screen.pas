@@ -95,6 +95,7 @@ type
   public
     constructor Create; virtual;
     destructor Destroy; override;
+    procedure Clear;
     procedure SaveToStream(const strm: TStream);
     procedure LoadFromStream(const strm: TStream);
     procedure GetBitmap(const b: TBitmap; const blink: boolean);
@@ -119,6 +120,11 @@ destructor TEndScreen.Destroy;
 begin
   FreeMem(data, SizeOf(endscreen_t));
   Inherited;
+end;
+
+procedure TEndScreen.Clear;
+begin
+  ZeroMemory(data, SizeOf(endscreen_t));
 end;
 
 function TEndScreen.getidx(const x, y: integer): integer;
