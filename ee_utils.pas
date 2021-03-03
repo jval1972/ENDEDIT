@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 //
-//  DD_TEXTURE: A tool for creating textures from real world photos.
-//  Copyright (C) 2017-2021 by Jim Valavanis
+//  ENDEDIT: An ENDTEXT Editor
+//  Copyright (C) 2021 by Jim Valavanis
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -23,10 +23,10 @@
 //
 //------------------------------------------------------------------------------
 //  E-Mail: jimmyvalavanis@yahoo.gr
-//  Site  : https://sourceforge.net/projects/texture-perspective/
+//  Site  : https://sourceforge.net/projects/endedit/
 //------------------------------------------------------------------------------
 
-unit tx_utils;
+unit ee_utils;
 
 interface
 

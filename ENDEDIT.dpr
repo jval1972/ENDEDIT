@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 //
-//  DD_TEXTURE: A tool for creating textures from real world photos.
-//  Copyright (C) 2017-2021 by Jim Valavanis
+//  ENDEDIT: An ENDTEXT Editor
+//  Copyright (C) 2021 by Jim Valavanis
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -19,36 +19,33 @@
 //  02111-1307, USA.
 //
 // DESCRIPTION:
-//  OpenGL utilities
+//  Project file
 //
 //------------------------------------------------------------------------------
 //  E-Mail: jimmyvalavanis@yahoo.gr
-//  Site  : https://sourceforge.net/projects/texture-perspective/
+//  Site  : https://sourceforge.net/projects/endedit/
 //------------------------------------------------------------------------------
 
-unit tx_glutils;
-
-interface
+program ENDEDIT;
 
 uses
-  dglOpenGL;
+  FastMM4 in 'FastMM4.pas',
+  FastMM4Messages in 'FastMM4Messages.pas',
+  Forms,
+  main in 'main.pas' {Form1},
+  pngextra in 'pngextra.pas',
+  pngimage in 'pngimage.pas',
+  pnglang in 'pnglang.pas',
+  xTGA in 'xTGA.pas',
+  zBitmap in 'zBitmap.pas',
+  zlibpas in 'zlibpas.pas',
+  ee_utils in 'ee_utils.pas';
 
-type
-  vertexinfo2d_t = record
-    xy: array[0..1] of GLfloat;
-    uv: array[0..1] of GLfloat;
-  end;
-  vertexinfo2d_p = ^vertexinfo2d_t;
+{$R *.res}
 
-procedure DOVERTEX2D(const vi: vertexinfo2d_t);
-
-implementation
-
-procedure DOVERTEX2D(const vi: vertexinfo2d_t);
 begin
-  glTexCoord2fv(@vi.uv);
-  glVertex2fv(@vi.xy);
-end;
-
-
+  Application.Initialize;
+  Application.Title := 'ENDTEXT Editor';
+  Application.CreateForm(TForm1, Form1);
+  Application.Run;
 end.
