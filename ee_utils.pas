@@ -30,6 +30,10 @@ unit ee_utils;
 
 interface
 
+type
+  TLongWordArray = array[0..$FFF] of LongWord;
+  PLongWordArray = ^TLongWordArray;
+
 function GetIntInRange(const x: Integer; const amin, amax: Integer): Integer;
 
 function I_VersionBuilt(fname: string = ''): string;
