@@ -69,7 +69,6 @@ type
     Panel4: TPanel;
     ScrollBox1: TScrollBox;
     PaintBox1: TPaintBox;
-    Panel6: TPanel;
     New1: TMenuItem;
     N3: TMenuItem;
     Save2: TMenuItem;

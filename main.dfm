@@ -2399,9 +2399,9 @@ object Form1: TForm1
     TabOrder = 3
     object ScrollBox1: TScrollBox
       Left = 0
-      Top = 24
+      Top = 0
       Width = 1023
-      Height = 528
+      Height = 552
       Align = alClient
       BevelEdges = []
       BevelInner = bvNone
@@ -2421,15 +2421,6 @@ object Form1: TForm1
         OnMouseUp = PaintBox1MouseUp
         OnPaint = PaintBox1Paint
       end
-    end
-    object Panel6: TPanel
-      Left = 0
-      Top = 0
-      Width = 1023
-      Height = 24
-      Align = alTop
-      Caption = 'Screen'
-      TabOrder = 1
     end
   end
   object MainMenu1: TMainMenu
