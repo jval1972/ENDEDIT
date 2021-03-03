@@ -152,8 +152,15 @@ uses
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
+  i: integer;
   doCreate: boolean;
 begin
+  DoubleBuffered := True;
+  for i := 0 to ComponentCount - 1 do
+    if Components[i].InheritsFrom(TWinControl) then
+      if not (Components[i] is TListBox) then
+        (Components[i] as TWinControl).DoubleBuffered := True;
+
   buffer := TBitmap.Create;
   buffer.Width := 640;
   buffer.Height := 200;
