@@ -194,7 +194,7 @@ begin
   end;
 end;
 
-procedure pt_SaveSettingsToFile(const fn: string);
+procedure ee_SaveSettingsToFile(const fn: string);
 var
   s: TStringList;
   i: integer;
@@ -224,7 +224,7 @@ begin
   end;
 end;
 
-function pt_LoadSettingFromFile(const fn: string): boolean;
+function ee_LoadSettingFromFile(const fn: string): boolean;
 var
   s: TStringList;
   i, j: integer;
