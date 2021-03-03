@@ -34,6 +34,14 @@ function GetIntInRange(const x: Integer; const amin, amax: Integer): Integer;
 
 function I_VersionBuilt(fname: string = ''): string;
 
+function MinI(const a, b: Integer): Integer;
+
+function CopyFile(const sname, dname: string): boolean;
+
+procedure BackupFile(const fname: string);
+
+function MkShortName(const fname: string): string;
+
 implementation
 
 uses
@@ -81,5 +89,66 @@ begin
   FreeMem(pointer(buffer), vsize + 1);
 end;
 
+function MinI(const a, b: Integer): Integer;
+begin
+  if a < b then
+    Result := a
+  else
+    Result := b;
+end;
+
+function CopyFile(const sname, dname: string): boolean;
+var
+  FromF, ToF: file;
+  NumRead, NumWritten: Integer;
+  Buf: array[1..8192] of Char;
+begin
+  if FileExists(sname) then
+  begin
+    AssignFile(FromF, sname);
+    Reset(FromF, 1);
+    AssignFile(ToF, dname);
+    Rewrite(ToF, 1);
+    repeat
+      BlockRead(FromF, Buf, SizeOf(Buf), NumRead);
+      BlockWrite(ToF, Buf, NumRead, NumWritten);
+    until (NumRead = 0) or (NumWritten <> NumRead);
+    CloseFile(FromF);
+    CloseFile(ToF);
+    Result := True;
+  end
+  else
+    Result := False;
+end;
+
+procedure BackupFile(const fname: string);
+var
+  fbck: string;
+begin
+  if not FileExists(fname) then
+    Exit;
+  fbck := fname + '_bak';
+  CopyFile(fname, fbck);
+end;
+
+function MkShortName(const fname: string): string;
+const
+  MAXDISPFNAME = 30;
+var
+  i: integer;
+begin
+  if Length(fname) < MAXDISPFNAME then
+  begin
+    Result := fname;
+    exit;
+  end;
+  Result := '';
+  for i := Length(fname) downto Length(fname) - (MAXDISPFNAME - 6) do
+    Result := fname[i] + Result;
+  Result := '...' + Result;
+  for i := 3 downto 1 do
+    Result := fname[i] + Result;
+end;
+
 end.
- 
+

@@ -1906,6 +1906,17 @@ object Form1: TForm1
     object Edit1: TMenuItem
       Caption = 'Edit'
       OnClick = Edit1Click
+      object Undo1: TMenuItem
+        Caption = 'Undo'
+        ShortCut = 16469
+      end
+      object Redo1: TMenuItem
+        Caption = 'Redo'
+        ShortCut = 16466
+      end
+      object N4: TMenuItem
+        Caption = '-'
+      end
       object Cut1: TMenuItem
         Caption = 'Cut'
         Hint = 'Cut to clipboard'

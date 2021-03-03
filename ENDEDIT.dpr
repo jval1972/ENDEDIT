@@ -39,7 +39,10 @@ uses
   xTGA in 'xTGA.pas',
   zBitmap in 'zBitmap.pas',
   zlibpas in 'zlibpas.pas',
-  ee_utils in 'ee_utils.pas';
+  ee_utils in 'ee_utils.pas',
+  ee_binary in 'ee_binary.pas',
+  ee_filemenuhistory in 'ee_filemenuhistory.pas',
+  ee_undo in 'ee_undo.pas';
 
 {$R *.res}
 

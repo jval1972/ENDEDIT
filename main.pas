@@ -87,6 +87,9 @@ type
     HistoryItem8: TMenuItem;
     HistoryItem9: TMenuItem;
     N14: TMenuItem;
+    Undo1: TMenuItem;
+    Redo1: TMenuItem;
+    N4: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure PaintBox1Paint(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
