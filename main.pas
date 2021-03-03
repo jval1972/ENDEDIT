@@ -108,11 +108,7 @@ type
     glneedrecalc: boolean;
     buffer: TBitmap;
     drawbuffer: TBitmap;
-    rc: HGLRC;   // Rendering Context
-    dc: HDC;     // Device Context
-    lastglHorzPos, lastglVertPos: integer;
     mousedown: boolean;
-    gridsize: integer;
     procedure Idle(Sender: TObject; var Done: Boolean);
     procedure Hint(Sender: TObject);
     procedure UpdateEnable;
@@ -134,14 +130,10 @@ uses
   ee_utils;
 
 procedure TForm1.FormCreate(Sender: TObject);
-var
-  pfd: TPIXELFORMATDESCRIPTOR;
-  pf: Integer;
 begin
   Scaled := False;
 
   mousedown := False;
-  gridsize := 9;
 
   buffer := TBitmap.Create;
   drawbuffer := TBitmap.Create;
@@ -258,10 +250,6 @@ end;
 
 procedure TForm1.PaintBox1MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
-var
-  i: integer;
-  mindist, dist: single;
-  minidx: Integer;
 begin
   mousedown := Button in [mbLeft];
   PaintBox1Responer(X, Y);
@@ -280,8 +268,6 @@ begin
 end;
 
 procedure TForm1.PaintBox1Responer(const X, Y: Integer);
-var
-  i: integer;
 begin
   if mousedown then
   begin
@@ -290,8 +276,6 @@ begin
 end;
 
 procedure TForm1.CreateDrawBuffer;
-var
-  i, j: integer;
 begin
   drawbuffer.Width := buffer.Width;
   drawbuffer.Height := buffer.Height;
