@@ -40,10 +40,10 @@ type
     Panel1: TPanel;
     StatusBar1: TStatusBar;
     Panel2: TPanel;
-    OpenButton1: TSpeedButton;
-    PasteButton: TSpeedButton;
-    Save3dButton: TSpeedButton;
-    Copy3dButton: TSpeedButton;
+    OpenSpeedButton1: TSpeedButton;
+    PasteSpeedButton1: TSpeedButton;
+    SaveSpeedButton1: TSpeedButton;
+    CopySpeedButton1: TSpeedButton;
     GridButton1: TSpeedButton;
     MainMenu1: TMainMenu;
     File1: TMenuItem;
@@ -83,10 +83,13 @@ type
     N4: TMenuItem;
     OpenDialog1: TOpenDialog;
     SaveDialog1: TSaveDialog;
+    NewSpeedButton1: TSpeedButton;
+    UndoSpeedButton1: TSpeedButton;
+    RedoSpeedButton1: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure PaintBox1Paint(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure PasteButtonClick(Sender: TObject);
+    procedure Paste1Click(Sender: TObject);
     procedure About1Click(Sender: TObject);
     procedure Exit1Click(Sender: TObject);
     procedure Copy1Click(Sender: TObject);
@@ -105,6 +108,7 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure New1Click(Sender: TObject);
     procedure Save1Click(Sender: TObject);
+    procedure SaveAs1Click(Sender: TObject);
   private
     { Private declarations }
     buffer: TBitmap;
@@ -153,6 +157,8 @@ begin
   drawbuffer := TBitmap.Create;
 
   mousedown := False;
+
+  ee_LoadSettingFromFile(ChangeFileExt(ParamStr(0), '.ini'));
 
   undoManager := TUndoRedoManager.Create;
   undoManager.OnLoadFromStream := DoLoadUndo;
@@ -232,13 +238,17 @@ end;
 
 procedure TForm1.Idle(Sender: TObject; var Done: Boolean);
 begin
+  UpdateEnable;
 end;
 
 procedure TForm1.UpdateEnable;
 begin
   Undo1.Enabled := undoManager.CanUndo;
   Redo1.Enabled := undoManager.CanRedo;
-  PasteButton.Enabled := Clipboard.HasFormat(CF_BITMAP);
+  UndoSpeedButton1.Enabled := undoManager.CanUndo;
+  RedoSpeedButton1.Enabled := undoManager.CanRedo;
+  Paste1.Enabled := Clipboard.HasFormat(CF_BITMAP);
+  PasteSpeedButton1.Enabled := Clipboard.HasFormat(CF_BITMAP);
   if needsupdate then
   begin
     InvalidatePaintBox;
@@ -246,7 +256,7 @@ begin
   end;
 end;
 
-procedure TForm1.PasteButtonClick(Sender: TObject);
+procedure TForm1.Paste1Click(Sender: TObject);
 begin
   if Clipboard.HasFormat(CF_BITMAP) then
   begin
@@ -367,6 +377,8 @@ end;
 procedure TForm1.DoCreateNew;
 begin
   undoManager.Clear;
+  SetFileName('');
+  changed := False;
 end;
 
 procedure TForm1.DoLoadFromStream(const s: TStream);
@@ -399,11 +411,13 @@ begin
     Exit;
   end;
 
+  undoManager.Clear;
   Result := True;
   fs := TFileStream.Create(aname, fmOpenRead);
   try
     DoLoadFromStream(fs);
     SetFileName(aname);
+    filemenuhistory.AddPath(aname);
     changed := False;
   finally
     fs.Free;
@@ -415,10 +429,11 @@ var
   fs: TFileStream;
 begin
   BackupFile(aname);
-  fs := TFileStream.Create(aname, fmOpenRead);
+  fs := TFileStream.Create(aname, fmCreate);
   try
     DoSaveToStream(fs);
     SetFileName(aname);
+    filemenuhistory.AddPath(aname);
     changed := False;
   finally
     fs.Free;
@@ -481,8 +496,19 @@ end;
 
 procedure TForm1.Save1Click(Sender: TObject);
 begin
-  if OpenDialog1.Execute then
-    DoSaveToFile(OpenDialog1.FileName);
+  if ffilename = '' then
+  begin
+    SaveAs1Click(Sender);
+    Exit;
+  end;
+
+  DoSaveToFile(ffilename);
+end;
+
+procedure TForm1.SaveAs1Click(Sender: TObject);
+begin
+  if SaveDialog1.Execute then
+    DoSaveToFile(SaveDialog1.FileName);
 end;
 
 end.
