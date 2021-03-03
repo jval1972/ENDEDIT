@@ -94,6 +94,7 @@ type
     RedoSpeedButton1: TSpeedButton;
     ZoomOutSpeedButton1: TSpeedButton;
     ZoomInSpeedButton1: TSpeedButton;
+    ForegroundPalette1: TImage;
     procedure FormCreate(Sender: TObject);
     procedure PaintBox1Paint(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
