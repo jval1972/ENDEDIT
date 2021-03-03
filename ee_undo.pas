@@ -87,7 +87,7 @@ type
   PUndoStack = ^TUndoStack;
   TUndoStack = TLimitedSizeStack;
 
-  TOnStreamOperationEvent = procedure (s: TStream) of object;
+  TOnStreamOperationEvent = procedure (const s: TStream) of object;
 
   TUndoRedoManager = class(TObject)
   private
