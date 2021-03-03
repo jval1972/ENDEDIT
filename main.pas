@@ -33,7 +33,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, ComCtrls, Buttons, Clipbrd, ExtDlgs, pngimage, xTGA, zBitmap,
-  Menus, ImgList, jpeg, StdCtrls;
+  Menus, ImgList, jpeg, StdCtrls, ee_undo, ee_filemenuhistory;
 
 type
   TForm1 = class(TForm)
@@ -45,7 +45,6 @@ type
     Save3dButton: TSpeedButton;
     Copy3dButton: TSpeedButton;
     GridButton1: TSpeedButton;
-    SavePictureDialog1: TSavePictureDialog;
     MainMenu1: TMainMenu;
     File1: TMenuItem;
     Open1: TMenuItem;
@@ -58,16 +57,8 @@ type
     Paste1: TMenuItem;
     Help1: TMenuItem;
     About1: TMenuItem;
-    OpenPictureDialog1: TOpenPictureDialog;
     ToolPanel: TPanel;
     Timer1: TTimer;
-    ImagePopupMenu: TPopupMenu;
-    TexturePopupMenu: TPopupMenu;
-    Copy2: TMenuItem;
-    Save1: TMenuItem;
-    Open2: TMenuItem;
-    Copy3: TMenuItem;
-    Paste2: TMenuItem;
     Panel4: TPanel;
     ScrollBox1: TScrollBox;
     PaintBox1: TPaintBox;
@@ -90,6 +81,8 @@ type
     Undo1: TMenuItem;
     Redo1: TMenuItem;
     N4: TMenuItem;
+    OpenDialog1: TOpenDialog;
+    SaveDialog1: TSaveDialog;
     procedure FormCreate(Sender: TObject);
     procedure PaintBox1Paint(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -97,7 +90,7 @@ type
     procedure About1Click(Sender: TObject);
     procedure Exit1Click(Sender: TObject);
     procedure Copy1Click(Sender: TObject);
-    procedure OpenButton1Click(Sender: TObject);
+    procedure Open1Click(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure Edit1Click(Sender: TObject);
     procedure PaintBox1MouseDown(Sender: TObject; Button: TMouseButton;
@@ -106,17 +99,38 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure PaintBox1MouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
+    procedure Undo1Click(Sender: TObject);
+    procedure Redo1Click(Sender: TObject);
+    procedure File1Click(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure New1Click(Sender: TObject);
+    procedure Save1Click(Sender: TObject);
   private
     { Private declarations }
     buffer: TBitmap;
     drawbuffer: TBitmap;
     mousedown: boolean;
+    changed: boolean;
+    needsupdate: boolean;
+    undoManager: TUndoRedoManager;
+    filemenuhistory: TFileMenuHistory;
+    ffilename: string;
     procedure Idle(Sender: TObject; var Done: Boolean);
     procedure Hint(Sender: TObject);
     procedure UpdateEnable;
     procedure InvalidatePaintBox;
     procedure PaintBox1Responer(const X, Y: Integer);
     procedure CreateDrawBuffer;
+    procedure DoCreateNew;
+    procedure DoLoadFromStream(const s: TStream);
+    procedure DoSaveToStream(const s: TStream);
+    procedure DoLoadUndo(const s: TStream);
+    procedure DoSaveUndo(const s: TStream);
+    function DoLoadFromFile(const aname: string): boolean;
+    procedure DoSaveToFile(const aname: string);
+    procedure OnLoadFileMenuHistory(Sender: TObject; const aname: string);
+    function CheckCanClose: boolean;
+    procedure SetFileName(const fname: string);
   public
     { Public declarations }
   end;
@@ -129,16 +143,61 @@ implementation
 {$R *.dfm}
 
 uses
-  ee_utils;
+  ee_utils, ee_defs;
 
 procedure TForm1.FormCreate(Sender: TObject);
+var
+  doCreate: boolean;
 begin
-  Scaled := False;
+  buffer := TBitmap.Create;
+  drawbuffer := TBitmap.Create;
 
   mousedown := False;
 
-  buffer := TBitmap.Create;
-  drawbuffer := TBitmap.Create;
+  undoManager := TUndoRedoManager.Create;
+  undoManager.OnLoadFromStream := DoLoadUndo;
+  undoManager.OnSaveToStream := DoSaveUndo;
+
+  filemenuhistory := TFileMenuHistory.Create(self);
+  filemenuhistory.MenuItem0 := HistoryItem0;
+  filemenuhistory.MenuItem1 := HistoryItem1;
+  filemenuhistory.MenuItem2 := HistoryItem2;
+  filemenuhistory.MenuItem3 := HistoryItem3;
+  filemenuhistory.MenuItem4 := HistoryItem4;
+  filemenuhistory.MenuItem5 := HistoryItem5;
+  filemenuhistory.MenuItem6 := HistoryItem6;
+  filemenuhistory.MenuItem7 := HistoryItem7;
+  filemenuhistory.MenuItem8 := HistoryItem8;
+  filemenuhistory.MenuItem9 := HistoryItem9;
+  filemenuhistory.OnOpen := OnLoadFileMenuHistory;
+
+  filemenuhistory.AddPath(bigstringtostring(@opt_filemenuhistory9));
+  filemenuhistory.AddPath(bigstringtostring(@opt_filemenuhistory8));
+  filemenuhistory.AddPath(bigstringtostring(@opt_filemenuhistory7));
+  filemenuhistory.AddPath(bigstringtostring(@opt_filemenuhistory6));
+  filemenuhistory.AddPath(bigstringtostring(@opt_filemenuhistory5));
+  filemenuhistory.AddPath(bigstringtostring(@opt_filemenuhistory4));
+  filemenuhistory.AddPath(bigstringtostring(@opt_filemenuhistory3));
+  filemenuhistory.AddPath(bigstringtostring(@opt_filemenuhistory2));
+  filemenuhistory.AddPath(bigstringtostring(@opt_filemenuhistory1));
+  filemenuhistory.AddPath(bigstringtostring(@opt_filemenuhistory0));
+
+  ffilename := '';
+
+  doCreate := True;
+  if ParamCount > 0 then
+    if DoLoadFromFile(ParamStr(1)) then
+      doCreate := False;
+
+  if docreate then
+  begin
+    SetFileName('');
+    changed := False;
+    needsupdate := True;
+    undoManager.Clear;
+  end
+  else
+    DoCreateNew;
 
   Application.OnIdle := Idle;
   Application.OnHint := Hint;
@@ -151,6 +210,22 @@ end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
+  undoManager.Free;
+
+  stringtobigstring(filemenuhistory.PathStringIdx(0), @opt_filemenuhistory0);
+  stringtobigstring(filemenuhistory.PathStringIdx(1), @opt_filemenuhistory1);
+  stringtobigstring(filemenuhistory.PathStringIdx(2), @opt_filemenuhistory2);
+  stringtobigstring(filemenuhistory.PathStringIdx(3), @opt_filemenuhistory3);
+  stringtobigstring(filemenuhistory.PathStringIdx(4), @opt_filemenuhistory4);
+  stringtobigstring(filemenuhistory.PathStringIdx(5), @opt_filemenuhistory5);
+  stringtobigstring(filemenuhistory.PathStringIdx(6), @opt_filemenuhistory6);
+  stringtobigstring(filemenuhistory.PathStringIdx(7), @opt_filemenuhistory7);
+  stringtobigstring(filemenuhistory.PathStringIdx(8), @opt_filemenuhistory8);
+  stringtobigstring(filemenuhistory.PathStringIdx(9), @opt_filemenuhistory9);
+  ee_SaveSettingsToFile(ChangeFileExt(ParamStr(0), '.ini'));
+
+  filemenuhistory.Free;
+
   buffer.Free;
   drawbuffer.Free;
 end;
@@ -161,7 +236,14 @@ end;
 
 procedure TForm1.UpdateEnable;
 begin
+  Undo1.Enabled := undoManager.CanUndo;
+  Redo1.Enabled := undoManager.CanRedo;
   PasteButton.Enabled := Clipboard.HasFormat(CF_BITMAP);
+  if needsupdate then
+  begin
+    InvalidatePaintBox;
+    needsupdate := False;
+  end;
 end;
 
 procedure TForm1.PasteButtonClick(Sender: TObject);
@@ -200,33 +282,13 @@ begin
   Clipboard.Assign(buffer);
 end;
 
-procedure TForm1.OpenButton1Click(Sender: TObject);
-var
-  p: TPicture;
+procedure TForm1.Open1Click(Sender: TObject);
 begin
-  if OpenPictureDialog1.Execute then
-  begin
-    p := TPicture.Create;
-    try
-      p.LoadFromFile(OpenPictureDialog1.FileName);
-      buffer.PixelFormat := pf32bit;
-      if p.Graphic.Width <> 0 then
-      begin
-        buffer.Width := p.Graphic.Width;
-        buffer.Height := p.Graphic.Height;
-        buffer.Canvas.Draw(0, 0, p.Graphic)
-      end
-      else
-      begin
-        buffer.Width := p.Bitmap.Width;
-        buffer.Height := p.Bitmap.Height;
-        buffer.Canvas.Draw(0, 0, p.Bitmap)
-      end;
-    finally
-      p.Free;
-    end;
-    InvalidatePaintBox;
-  end;
+  if not CheckCanClose then
+    Exit;
+
+  if OpenDialog1.Execute then
+    DoLoadFromFile(OpenDialog1.FileName);
 end;
 
 procedure TForm1.InvalidatePaintBox;
@@ -246,6 +308,8 @@ end;
 procedure TForm1.Edit1Click(Sender: TObject);
 begin
   Paste1.Enabled := Clipboard.HasFormat(CF_BITMAP);
+  Undo1.Enabled := undoManager.CanUndo;
+  Redo1.Enabled := undoManager.CanRedo;
 end;
 
 procedure TForm1.PaintBox1MouseDown(Sender: TObject; Button: TMouseButton;
@@ -281,6 +345,144 @@ begin
   drawbuffer.Height := buffer.Height;
 
   drawbuffer.Canvas.Draw(0, 0, buffer);
+end;
+
+procedure TForm1.Undo1Click(Sender: TObject);
+begin
+  if undoManager.CanUndo then
+    undoManager.Undo;
+end;
+
+procedure TForm1.Redo1Click(Sender: TObject);
+begin
+  if undoManager.CanRedo then
+    undoManager.Redo;
+end;
+
+procedure TForm1.File1Click(Sender: TObject);
+begin
+  filemenuhistory.RefreshMenuItems;
+end;
+
+procedure TForm1.DoCreateNew;
+begin
+  undoManager.Clear;
+end;
+
+procedure TForm1.DoLoadFromStream(const s: TStream);
+begin
+  needsupdate := True;
+end;
+
+procedure TForm1.DoSaveToStream(const s: TStream);
+begin
+end;
+
+procedure TForm1.DoLoadUndo(const s: TStream);
+begin
+  DoLoadFromStream(s);
+  changed := True;
+end;
+
+procedure TForm1.DoSaveUndo(const s: TStream);
+begin
+  DoSaveToStream(s);
+end;
+
+function TForm1.DoLoadFromFile(const aname: string): boolean;
+var
+  fs: TFileStream;
+begin
+  if not FileExists(aname) then
+  begin
+    Result := False;
+    Exit;
+  end;
+
+  Result := True;
+  fs := TFileStream.Create(aname, fmOpenRead);
+  try
+    DoLoadFromStream(fs);
+    SetFileName(aname);
+    changed := False;
+  finally
+    fs.Free;
+  end;
+end;
+
+procedure TForm1.DoSaveToFile(const aname: string);
+var
+  fs: TFileStream;
+begin
+  BackupFile(aname);
+  fs := TFileStream.Create(aname, fmOpenRead);
+  try
+    DoSaveToStream(fs);
+    SetFileName(aname);
+    changed := False;
+  finally
+    fs.Free;
+  end;
+end;
+
+procedure TForm1.OnLoadFileMenuHistory(Sender: TObject; const aname: string);
+begin
+  if CheckCanClose then
+    DoLoadFromFile(aname);
+end;
+
+procedure TForm1.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  CanClose := CheckCanClose;
+end;
+
+function TForm1.CheckCanClose: boolean;
+var
+  ret: integer;
+begin
+  if changed then
+  begin
+    ret := MessageBox(Handle, 'Do you want to save changes?', PChar(rsTitle), MB_YESNOCANCEL or MB_ICONQUESTION or MB_APPLMODAL);
+    if ret = IDCANCEL	then
+    begin
+      Result := False;
+      exit;
+    end;
+    if ret = IDNO	then
+    begin
+      Result := True;
+      exit;
+    end;
+    if ret = IDYES then
+    begin
+      Save1Click(self);
+      Result := not changed;
+      exit;
+    end;
+  end;
+  Result := True;
+end;
+
+procedure TForm1.New1Click(Sender: TObject);
+begin
+  if not CheckCanClose then
+    Exit;
+
+  DoCreateNew;
+end;
+
+procedure TForm1.SetFileName(const fname: string);
+begin
+  ffilename := fname;
+  Caption := rsTitle;
+  if ffilename <> '' then
+    Caption := Caption + ' - ' + MkShortName(ffilename);
+end;
+
+procedure TForm1.Save1Click(Sender: TObject);
+begin
+  if OpenDialog1.Execute then
+    DoSaveToFile(OpenDialog1.FileName);
 end;
 
 end.

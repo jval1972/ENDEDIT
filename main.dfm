@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 111
-  Top = 18
-  Width = 1188
+  Left = 66
+  Top = 49
+  Width = 1168
   Height = 692
   Caption = 'ENDTEXT Editor'
   Color = clBtnFace
@@ -1093,6 +1093,7 @@ object Form1: TForm1
   OldCreateOrder = False
   ShowHint = True
   WindowState = wsMaximized
+  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   PixelsPerInch = 96
@@ -1100,7 +1101,7 @@ object Form1: TForm1
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 1172
+    Width = 1152
     Height = 72
     Align = alTop
     Caption = ' '
@@ -1214,7 +1215,7 @@ object Form1: TForm1
         FCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFC
         FCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFC}
       Layout = blGlyphTop
-      OnClick = OpenButton1Click
+      OnClick = Open1Click
     end
     object PasteButton: TSpeedButton
       Left = 80
@@ -1757,7 +1758,7 @@ object Form1: TForm1
   object StatusBar1: TStatusBar
     Left = 0
     Top = 614
-    Width = 1172
+    Width = 1152
     Height = 19
     Panels = <
       item
@@ -1767,7 +1768,7 @@ object Form1: TForm1
   object Panel2: TPanel
     Left = 0
     Top = 72
-    Width = 73
+    Width = 129
     Height = 542
     Align = alLeft
     Caption = ' '
@@ -1776,16 +1777,16 @@ object Form1: TForm1
     object ToolPanel: TPanel
       Left = 19
       Top = 16
-      Width = 34
-      Height = 145
+      Width = 94
+      Height = 105
       Caption = ' '
       TabOrder = 0
     end
   end
   object Panel4: TPanel
-    Left = 73
+    Left = 129
     Top = 72
-    Width = 1099
+    Width = 1023
     Height = 542
     Align = alClient
     BevelOuter = bvNone
@@ -1794,7 +1795,7 @@ object Form1: TForm1
     object ScrollBox1: TScrollBox
       Left = 0
       Top = 24
-      Width = 1099
+      Width = 1023
       Height = 518
       Align = alClient
       BevelEdges = []
@@ -1819,20 +1820,12 @@ object Form1: TForm1
     object Panel6: TPanel
       Left = 0
       Top = 0
-      Width = 1099
+      Width = 1023
       Height = 24
       Align = alTop
       Caption = 'Screen'
-      PopupMenu = ImagePopupMenu
       TabOrder = 1
     end
-  end
-  object SavePictureDialog1: TSavePictureDialog
-    DefaultExt = 'bmp'
-    Filter = 'Bitmaps (*.bmp)|*.bmp'
-    Options = [ofOverwritePrompt, ofHideReadOnly, ofPathMustExist, ofEnableSizing]
-    Left = 345
-    Top = 193
   end
   object MainMenu1: TMainMenu
     Left = 209
@@ -1840,9 +1833,11 @@ object Form1: TForm1
     object File1: TMenuItem
       Caption = 'File'
       Hint = 'Open an image from disk'
+      OnClick = File1Click
       object New1: TMenuItem
         Caption = 'New'
         ShortCut = 16462
+        OnClick = New1Click
       end
       object N3: TMenuItem
         Caption = '-'
@@ -1850,11 +1845,12 @@ object Form1: TForm1
       object Open1: TMenuItem
         Caption = 'Open'
         ShortCut = 16463
-        OnClick = OpenButton1Click
+        OnClick = Open1Click
       end
       object Save2: TMenuItem
         Caption = 'Save'
         ShortCut = 16467
+        OnClick = Save1Click
       end
       object SaveAs1: TMenuItem
         Caption = 'Save As'
@@ -1909,10 +1905,12 @@ object Form1: TForm1
       object Undo1: TMenuItem
         Caption = 'Undo'
         ShortCut = 16469
+        OnClick = Undo1Click
       end
       object Redo1: TMenuItem
         Caption = 'Redo'
         ShortCut = 16466
+        OnClick = Redo1Click
       end
       object N4: TMenuItem
         Caption = '-'
@@ -1947,51 +1945,18 @@ object Form1: TForm1
       end
     end
   end
-  object OpenPictureDialog1: TOpenPictureDialog
-    Filter = 
-      'All (*.jpg;*.jpeg;*.bmp;*.png;*.tga)|*.jpg;*.jpeg;*.bmp;*.png;*.' +
-      'tga|JPEG Image File (*.jpg)|*.jpg|JPEG Image File (*.jpeg)|*.jpe' +
-      'g|Bitmaps (*.bmp)|*.bmp|PNG Image (*.png)|*.png|TGA Image (*.tga' +
-      ')|*.tga|*.bmz|Compressed Bitmap (*.bmz)'
-    Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]
-    Left = 113
-    Top = 217
-  end
   object Timer1: TTimer
     Interval = 500
     OnTimer = Timer1Timer
     Left = 217
     Top = 105
   end
-  object ImagePopupMenu: TPopupMenu
-    Left = 161
-    Top = 360
-    object Open2: TMenuItem
-      Caption = 'Open'
-      Hint = 'Open an image from disk'
-      OnClick = OpenButton1Click
-    end
-    object Copy3: TMenuItem
-      Caption = 'Copy'
-      Hint = 'Copy image to Clipboard'
-      OnClick = Copy1Click
-    end
-    object Paste2: TMenuItem
-      Caption = 'Paste'
-      Hint = 'Paste an image from Clipboard'
-      OnClick = PasteButtonClick
-    end
+  object OpenDialog1: TOpenDialog
+    Left = 169
+    Top = 144
   end
-  object TexturePopupMenu: TPopupMenu
-    Left = 257
-    Top = 360
-    object Copy2: TMenuItem
-      Caption = 'Copy'
-      Hint = 'Copy texture to Clipboard'
-    end
-    object Save1: TMenuItem
-      Caption = 'Save'
-      Hint = 'Save texture to disk'
-    end
+  object SaveDialog1: TSaveDialog
+    Left = 217
+    Top = 144
   end
 end
