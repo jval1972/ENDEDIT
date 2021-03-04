@@ -130,7 +130,7 @@ end;
 
 function TEndScreen.getidx(const x, y: integer): integer;
 begin
-  Result := y * SCREENSIZEY + x;
+  Result := y * SCREENSIZEX + x;
 end;
 
 function TEndScreen.getcoloridx(const c: LongWord; const range: integer): integer;
