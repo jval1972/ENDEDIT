@@ -126,6 +126,7 @@ type
       MousePos: TPoint; var Handled: Boolean);
     procedure ZoomIn1Click(Sender: TObject);
     procedure ZoomOut1Click(Sender: TObject);
+    procedure GridButton1Click(Sender: TObject);
   private
     { Private declarations }
     buffer: TBitmap;
@@ -145,6 +146,7 @@ type
     procedure UpdateEnable;
     procedure InvalidatePaintBox;
     procedure PaintBox1Responer(const X, Y: Integer);
+    procedure DrawGrid;
     procedure CreateDrawBuffer;
     procedure DoCreateNew;
     procedure DoLoadFromStream(const s: TStream);
@@ -399,6 +401,34 @@ begin
   end;
 end;
 
+procedure TForm1.DrawGrid;
+var
+  x, y: integer;
+  aw, ah: integer;
+  stepw, steph: integer;
+begin
+  if GridButton1.Down then
+  begin
+    drawbuffer.Canvas.Pen.Style := psSolid;
+    drawbuffer.Canvas.Pen.Color := RGB(160, 160, 128);
+    stepw := drawbuffer.Width div SCREENSIZEX;
+
+    for x := 1 to SCREENSIZEX - 1 do
+    begin
+      drawbuffer.Canvas.MoveTo(x * stepw, 0);
+      drawbuffer.Canvas.LineTo(x * stepw, drawbuffer.Height);
+    end;
+
+    steph := drawbuffer.Height div SCREENSIZEY;
+    for y := 1 to SCREENSIZEY - 1 do
+    begin
+      drawbuffer.Canvas.MoveTo(0, y * steph);
+      drawbuffer.Canvas.LineTo(drawbuffer.Width, y * steph);
+    end;
+  end;
+
+end;
+
 procedure TForm1.CreateDrawBuffer;
 begin
   escreen.GetBitmap(buffer, blink);
@@ -406,6 +436,7 @@ begin
   drawbuffer.Height := 400 + (2 * SCREENSIZEY) * zoom;
 
   drawbuffer.Canvas.StretchDraw(Rect(0, 0, drawbuffer.Width, drawbuffer.Height), buffer);
+  DrawGrid;
 end;
 
 procedure TForm1.Undo1Click(Sender: TObject);
@@ -625,6 +656,11 @@ begin
     dec(zoom);
     needsupdate := True;
   end;
+end;
+
+procedure TForm1.GridButton1Click(Sender: TObject);
+begin
+  InvalidatePaintBox;
 end;
 
 end.
