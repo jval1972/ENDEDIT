@@ -64,7 +64,7 @@ type
     Paste1: TMenuItem;
     Help1: TMenuItem;
     About1: TMenuItem;
-    ToolPanel: TPanel;
+    ForegroundPalettePanel1: TPanel;
     Timer1: TTimer;
     Panel4: TPanel;
     ScrollBox1: TScrollBox;
@@ -95,6 +95,8 @@ type
     ZoomOutSpeedButton1: TSpeedButton;
     ZoomInSpeedButton1: TSpeedButton;
     ForegroundPalette1: TImage;
+    BackgroundPalettePanel1: TPanel;
+    BackgroundPalette1: TImage;
     procedure FormCreate(Sender: TObject);
     procedure PaintBox1Paint(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
