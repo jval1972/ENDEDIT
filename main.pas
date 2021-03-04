@@ -395,6 +395,8 @@ procedure TForm1.LLeftMousePaintAt(const X, Y: integer);
 begin
   if not lmousedown then
     Exit;
+  if FreeDrawSpeedButton.Down then
+    escreen.BackgroundColor[X, Y] := RGB(255, 255, 255);
 end;
 
 procedure TForm1.LLeftMousePaintTo(const X, Y: integer);
@@ -457,6 +459,7 @@ begin
     end;
   end;
 
+  Changed := True;
   InvalidatePaintBox;
 end;
 
@@ -495,6 +498,8 @@ begin
     lmousemovex := ZoomValueX(X);
     lmousemovey := ZoomValueY(Y);
     LLeftMousePaintTo(lmousemovex, lmousemovey);
+    lmousedownx := ZoomValueX(X);
+    lmousedowny := ZoomValueY(Y);
   end
 end;
 
@@ -532,7 +537,7 @@ end;
 
 function TForm1.ZoomValueY(const Y: Integer): Integer;
 begin
-  Result := GetIntInRange(Y div (drawbuffer.Width div SCREENSIZEY), 0, SCREENSIZEY - 1);
+  Result := GetIntInRange(Y div (drawbuffer.Height div SCREENSIZEY), 0, SCREENSIZEY - 1);
 end;
 
 procedure TForm1.CreateDrawBuffer;
