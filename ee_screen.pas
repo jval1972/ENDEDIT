@@ -39,6 +39,25 @@ const
 
   screencolors: array[0..NUMFRONTCOLORS - 1] of LongWord = (
     0,                            // black
+    170 shl 16,                          // blue
+    170 shl 8,                    // green
+    170 shl 8 + 170 shl 16,              // cyan
+    170,                   // red
+    170 + 170 shl 16,             // magent
+    170 + 85 shl 8,        // brown
+    170 + 170 shl 8 + 170 shl 16, // light gray
+    85 + 85 shl 8 + 85 shl 16,    // dark gray
+    85 + 85 shl 8 + 255 shl 16,   // light blue
+    85 + 255 shl 8 + 85 shl 16,   // light green
+    85 + 255 shl 8 + 255 shl 16,  // light cyan
+    255 + 85 shl 8 + 85 shl 16,   // light red
+    255 + 85 shl 8 + 255 shl 16,  // light magenta
+    255 + 255 shl 8 + 85 shl 16,  // yellow
+    255 + 255 shl 8 + 255 shl 16  // white
+  );
+
+  swapscreencolors: array[0..NUMFRONTCOLORS - 1] of LongWord = (
+    0,                            // black
     170,                          // blue
     170 shl 8,                    // green
     170 shl 8 + 170,              // cyan
@@ -283,14 +302,7 @@ begin
   begin
     x := i mod 80;
     y := i div 80;
-    fcolor := screencolors[pe_char.flags and 15];
-    bcolor := screencolors[(pe_char.flags shr 4) and 7];
-    cx := (pe_char.code - 1) mod 16;
-    cy := (pe_char.code - 1) div 16;
-    if blink then
-      doblink := pe_char.flags shr 7 <> 0
-    else
-      doblink := false;
+    bcolor := swapscreencolors[(pe_char.flags shr 4) and 7];
     if pe_char.code = 0 then
     begin
       for iy := 0 to 7 do
@@ -305,6 +317,13 @@ begin
     end
     else
     begin
+      fcolor := swapscreencolors[pe_char.flags and 15];
+      cx := (pe_char.code - 1) mod 16;
+      cy := (pe_char.code - 1) div 16;
+      if blink then
+        doblink := pe_char.flags shr 7 <> 0
+      else
+        doblink := false;
       for iy := 0 to 7 do
       begin
         sp := x * 8 + (y * 8 + iy) * 640;
