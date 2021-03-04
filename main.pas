@@ -468,6 +468,7 @@ procedure TForm1.PaintBox1MouseDown(Sender: TObject; Button: TMouseButton;
 begin
   if button = mbLeft then
   begin
+    undoManager.SaveUndo;
     lmousedown := True;
     lmousedownx := ZoomValueX(X);
     lmousedowny := ZoomValueY(Y);
