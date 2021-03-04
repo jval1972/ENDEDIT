@@ -97,6 +97,13 @@ type
     ForegroundPalette1: TImage;
     BackgroundPalettePanel1: TPanel;
     BackgroundPalette1: TImage;
+    ToolPanel: TPanel;
+    FreeDrawSpeedButton: TSpeedButton;
+    FloodFillSpeedButton: TSpeedButton;
+    ColorPickerSpeedButton: TSpeedButton;
+    EraseSpeedButton: TSpeedButton;
+    ElevateSpeedButton: TSpeedButton;
+    PaletteSpeedButton1: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure PaintBox1Paint(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -131,7 +138,6 @@ type
     { Private declarations }
     buffer: TBitmap;
     drawbuffer: TBitmap;
-    mousedown: boolean;
     changed: boolean;
     needsupdate: boolean;
     undoManager: TUndoRedoManager;
@@ -141,12 +147,18 @@ type
     zoom: integer;
     flastzoomwheel: int64;
     blink: boolean;
+    lmousedown: boolean;
+    lmousedownx, lmousedowny: integer;
+    lmousemovex, lmousemovey: integer;
     procedure Idle(Sender: TObject; var Done: Boolean);
     procedure Hint(Sender: TObject);
     procedure UpdateEnable;
     procedure InvalidatePaintBox;
-    procedure PaintBox1Responer(const X, Y: Integer);
     procedure DrawGrid;
+    function ZoomValueX(const X: Integer): Integer;
+    function ZoomValueY(const Y: Integer): Integer;
+    procedure LLeftMousePaintAt(const X, Y: integer);
+    procedure LLeftMousePaintTo(const X, Y: integer);
     procedure CreateDrawBuffer;
     procedure DoCreateNew;
     procedure DoLoadFromStream(const s: TStream);
@@ -183,6 +195,12 @@ begin
       if not (Components[i] is TListBox) then
         (Components[i] as TWinControl).DoubleBuffered := True;
 
+  lmousedown := False;
+  lmousedownx := 0;
+  lmousedowny := 0;
+  lmousemovex := 0;
+  lmousemovey := 0;
+
   buffer := TBitmap.Create;
   buffer.Width := 640;
   buffer.Height := 200;
@@ -197,7 +215,6 @@ begin
 
   escreen := TEndScreen.Create;
 
-  mousedown := False;
   blink := False;
 
   undoManager := TUndoRedoManager.Create;
@@ -374,37 +391,116 @@ begin
   Redo1.Enabled := undoManager.CanRedo;
 end;
 
+procedure TForm1.LLeftMousePaintAt(const X, Y: integer);
+begin
+  if not lmousedown then
+    Exit;
+end;
+
+procedure TForm1.LLeftMousePaintTo(const X, Y: integer);
+var
+  dx, dy: integer;
+  curx, cury: integer;
+  sx, sy,
+  ax, ay,
+  d: integer;
+begin
+  if not lmousedown then
+    Exit;
+
+  dx := X - lmousedownx;
+  ax := 2 * abs(dx);
+  if dx < 0 then
+    sx := -1
+  else
+    sx := 1;
+  dy := Y - lmousedowny;
+  ay := 2 * abs(dy);
+  if dy < 0 then
+    sy := -1
+  else
+    sy := 1;
+
+  curx := lmousedownx;
+  cury := lmousedowny;
+
+  if ax > ay then
+  begin
+    d := ay - ax div 2;
+    while True do
+    begin
+      LLeftMousePaintAt(curx, cury);
+      if curx = X then break;
+      if d >= 0 then
+      begin
+        cury := cury + sy;
+        d := d - ax;
+      end;
+      curx := curx + sx;
+      d := d + ay;
+    end;
+  end
+  else
+  begin
+    d := ax - ay div 2;
+    while True do
+    begin
+      LLeftMousePaintAt(curx, cury);
+      if cury = Y then break;
+      if d >= 0 then
+      begin
+        curx := curx + sx;
+        d := d - ay;
+      end;
+      cury := cury + sy;
+      d := d + ax;
+    end;
+  end;
+
+  InvalidatePaintBox;
+end;
+
 procedure TForm1.PaintBox1MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
-  mousedown := Button in [mbLeft];
-  PaintBox1Responer(X, Y);
+  if button = mbLeft then
+  begin
+    lmousedown := True;
+    lmousedownx := ZoomValueX(X);
+    lmousedowny := ZoomValueY(Y);
+    lmousemovex := ZoomValueX(X);
+    lmousemovey := ZoomValueY(Y);
+
+    LLeftMousePaintTo(lmousemovex, lmousemovey);
+  end;
 end;
 
 procedure TForm1.PaintBox1MouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
-  mousedown := False;
+  if button = mbLeft then
+  begin
+    lmousemovex := ZoomValueX(X);
+    lmousemovey := ZoomValueY(Y);
+    LLeftMousePaintTo(lmousemovex, lmousemovey);
+    lmousedown := False;
+  end;
 end;
 
 procedure TForm1.PaintBox1MouseMove(Sender: TObject; Shift: TShiftState; X,
   Y: Integer);
 begin
-  PaintBox1Responer(X, Y);
-end;
-
-procedure TForm1.PaintBox1Responer(const X, Y: Integer);
-begin
-  if mousedown then
+  if lmousedown then
   begin
-    InvalidatePaintBox;
-  end;
+    lmousemovex := ZoomValueX(X);
+    lmousemovey := ZoomValueY(Y);
+    LLeftMousePaintTo(lmousemovex, lmousemovey);
+  end
 end;
 
 procedure TForm1.DrawGrid;
 var
   x, y: integer;
-  aw, ah: integer;
   stepw, steph: integer;
 begin
   if GridButton1.Down then
@@ -427,6 +523,16 @@ begin
     end;
   end;
 
+end;
+
+function TForm1.ZoomValueX(const X: Integer): Integer;
+begin
+  Result := GetIntInRange(X div (drawbuffer.Width div SCREENSIZEX), 0, SCREENSIZEX - 1);
+end;
+
+function TForm1.ZoomValueY(const Y: Integer): Integer;
+begin
+  Result := GetIntInRange(Y div (drawbuffer.Width div SCREENSIZEY), 0, SCREENSIZEY - 1);
 end;
 
 procedure TForm1.CreateDrawBuffer;
