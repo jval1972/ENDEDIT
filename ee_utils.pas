@@ -36,6 +36,8 @@ type
 
 function GetIntInRange(const x: Integer; const amin, amax: Integer): Integer;
 
+function IsIntInRange(const x: Integer; const amin, amax: Integer): Boolean;
+
 function I_VersionBuilt(fname: string = ''): string;
 
 function MinI(const a, b: Integer): Integer;
@@ -59,6 +61,11 @@ begin
     Result := amin
   else if Result > amax then
     Result := amax;
+end;
+
+function IsIntInRange(const x: Integer; const amin, amax: Integer): Boolean;
+begin
+  Result := (x >= amin) and (x <= amax); 
 end;
 
 function I_VersionBuilt(fname: string = ''): string;

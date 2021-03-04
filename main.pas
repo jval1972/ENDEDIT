@@ -42,6 +42,9 @@ const
 const
   MOUSEWHEELTIMEOUT = 100; // Msecs until next mouse wheel even to be proccessed
 
+const
+  COLORPICKPALETTESIZE = 24;
+
 type
   TForm1 = class(TForm)
     Panel1: TPanel;
@@ -134,6 +137,10 @@ type
     procedure ZoomIn1Click(Sender: TObject);
     procedure ZoomOut1Click(Sender: TObject);
     procedure GridButton1Click(Sender: TObject);
+    procedure BackgroundPalette1MouseDown(Sender: TObject;
+      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure ForegroundPalette1MouseDown(Sender: TObject;
+      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
   private
     { Private declarations }
     buffer: TBitmap;
@@ -150,6 +157,9 @@ type
     lmousedown: boolean;
     lmousedownx, lmousedowny: integer;
     lmousemovex, lmousemovey: integer;
+    bkcolor, fgcolor: LongWord;
+    bkpalbitmap, fgpalbitmap: TBitmap;
+    closing: boolean;
     procedure Idle(Sender: TObject; var Done: Boolean);
     procedure Hint(Sender: TObject);
     procedure UpdateEnable;
@@ -170,6 +180,8 @@ type
     procedure OnLoadFileMenuHistory(Sender: TObject; const aname: string);
     function CheckCanClose: boolean;
     procedure SetFileName(const fname: string);
+    procedure HandlePaletteImage(const X, Y: integer; const Palette1: TImage;
+      const palbitmap: TBitmap; const tx: string; var cc: LongWord);
   public
     { Public declarations }
   end;
@@ -194,6 +206,8 @@ begin
     if Components[i].InheritsFrom(TWinControl) then
       if not (Components[i] is TListBox) then
         (Components[i] as TWinControl).DoubleBuffered := True;
+
+  closing := False;
 
   lmousedown := False;
   lmousedownx := 0;
@@ -252,6 +266,15 @@ begin
   GridButton1.Down := opt_showgrid;
   zoom := GetIntInRange(opt_zoom, MINZOOM, MAXZOOM);
 
+  bkpalbitmap := TBitmap.Create;
+  bkpalbitmap.Assign(BackgroundPalette1.Picture.Bitmap);
+
+  fgpalbitmap := TBitmap.Create;
+  fgpalbitmap.Assign(ForegroundPalette1.Picture.Bitmap);
+
+  HandlePaletteImage(1, 1, BackgroundPalette1, bkpalbitmap, 'BK', bkcolor);
+  HandlePaletteImage(ForegroundPalette1.Width - 1, ForegroundPalette1.Height - 1, ForegroundPalette1, fgpalbitmap, 'FG', fgcolor);
+
   doCreate := True;
   if ParamCount > 0 then
     if DoLoadFromFile(ParamStr(1)) then
@@ -278,6 +301,8 @@ end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
+  closing := True;
+
   undoManager.Free;
 
   stringtobigstring(filemenuhistory.PathStringIdx(0), @opt_filemenuhistory0);
@@ -298,6 +323,9 @@ begin
 
   buffer.Free;
   drawbuffer.Free;
+
+  bkpalbitmap.Free;
+  fgpalbitmap.Free;
 
   escreen.Free;
 end;
@@ -773,6 +801,70 @@ end;
 procedure TForm1.GridButton1Click(Sender: TObject);
 begin
   InvalidatePaintBox;
+end;
+
+function constrastcolor(const cc: LongWord): LongWord;
+var
+  l: double;
+begin
+  l := GetRValue(cc) * 0.299 + GetGValue(cc) * 0.587 + GetBValue(cc) * 0.114;
+  if l < 128 then
+    Result := RGB(255, 255, 255)
+  else
+    Result := RGB(0, 0, 0);
+end;
+
+procedure TForm1.HandlePaletteImage(const X, Y: integer; const Palette1: TImage;
+  const palbitmap: TBitmap; const tx: string; var cc: LongWord);
+var
+  px, py: integer;
+  C: TCanvas;
+  txcolor: LongWord;
+begin
+  if closing then
+    Exit;
+
+  if not IsIntInRange(X, 0, Palette1.Width - 1) then
+    Exit;
+
+  if not IsIntInRange(Y, 0, Palette1.Height - 1) then
+    Exit;
+
+  cc := palbitmap.Canvas.Pixels[X, Y];
+
+  C := Palette1.Picture.Bitmap.Canvas;
+  C.Draw(0, 0, palbitmap);
+  px := X div COLORPICKPALETTESIZE;
+  py := Y div COLORPICKPALETTESIZE;
+  C.Pen.Style := psSolid;
+  txcolor := constrastcolor(cc);
+  C.Pen.Color := txcolor;
+  C.MoveTo(px * COLORPICKPALETTESIZE, py * COLORPICKPALETTESIZE);
+  C.LineTo((1 + px) * COLORPICKPALETTESIZE - 1, py * COLORPICKPALETTESIZE);
+  C.LineTo((1 + px) * COLORPICKPALETTESIZE - 1, (1 + py) * COLORPICKPALETTESIZE - 1);
+  C.LineTo(px * COLORPICKPALETTESIZE, (1 + py) * COLORPICKPALETTESIZE - 1);
+  C.LineTo(px * COLORPICKPALETTESIZE, py * COLORPICKPALETTESIZE);
+  C.Font.Size := 10;
+  C.Font.Color := txcolor;
+  C.Brush.Style := bsClear;
+  C.TextOut(
+    px * COLORPICKPALETTESIZE + COLORPICKPALETTESIZE div 2 - C.TextWidth(tx) div 2,
+    py * COLORPICKPALETTESIZE + COLORPICKPALETTESIZE div 2 - C.TextHeight(tx) div 2,
+    tx
+  );
+  Palette1.Invalidate;
+end;
+
+procedure TForm1.BackgroundPalette1MouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  HandlePaletteImage(X, Y, BackgroundPalette1, bkpalbitmap, 'BK', bkcolor);
+end;
+
+procedure TForm1.ForegroundPalette1MouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  HandlePaletteImage(X, Y, ForegroundPalette1, fgpalbitmap, 'FG', fgcolor);
 end;
 
 end.

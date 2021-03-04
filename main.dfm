@@ -3263,6 +3263,7 @@ object Form1: TForm1
           AAAA00AAAA00AAAA00AAAA00AAAA00AAAA00AAAA00AAAA00AAAA00AAAA00AAAA
           00AAAA00AAAA00AAAA00AAAA00AAAA00AAAA00AAAA00AAAA00AAAA00AAAA00AA
           AA00}
+        OnMouseDown = ForegroundPalette1MouseDown
       end
     end
     object BackgroundPalettePanel1: TPanel
@@ -3714,6 +3715,7 @@ object Form1: TForm1
           AAAA00AAAA00AAAA00AAAA00AAAA00AAAA00AAAA00AAAA00AAAA00AAAA00AAAA
           00AAAA00AAAA00AAAA00AAAA00AAAA00AAAA00AAAA00AAAA00AAAA00AAAA00AA
           AA00}
+        OnMouseDown = BackgroundPalette1MouseDown
       end
     end
     object ToolPanel: TPanel
