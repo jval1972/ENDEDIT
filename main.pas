@@ -98,15 +98,17 @@ type
     ZoomOutSpeedButton1: TSpeedButton;
     ZoomInSpeedButton1: TSpeedButton;
     ForegroundPalette1: TImage;
-    BackgroundPalettePanel1: TPanel;
-    BackgroundPalette1: TImage;
     ToolPanel: TPanel;
-    FreeDrawSpeedButton: TSpeedButton;
-    FloodFillSpeedButton: TSpeedButton;
     ColorPickerSpeedButton: TSpeedButton;
-    EraseSpeedButton: TSpeedButton;
+    EraseTextSpeedButton: TSpeedButton;
     ElevateSpeedButton: TSpeedButton;
     PaletteSpeedButton1: TSpeedButton;
+    Panel3: TPanel;
+    BackgroundPalettePanel1: TPanel;
+    BackgroundPalette1: TImage;
+    Panel5: TPanel;
+    FreeDrawSpeedButton: TSpeedButton;
+    FloodFillSpeedButton: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure PaintBox1Paint(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -182,6 +184,9 @@ type
     procedure SetFileName(const fname: string);
     procedure HandlePaletteImage(const X, Y: integer; const Palette1: TImage;
       const palbitmap: TBitmap; const tx: string; var cc: LongWord);
+    procedure EditActionFreeDrawBackground(const X, Y: integer);
+    procedure EditActionEraseText(const X, Y: integer);
+    procedure EditActionFloodFill(const X, Y: integer);
   public
     { Public declarations }
   end;
@@ -418,12 +423,49 @@ begin
   Redo1.Enabled := undoManager.CanRedo;
 end;
 
+procedure TForm1.EditActionFreeDrawBackground(const X, Y: integer);
+begin
+  escreen.BackgroundColor[X, Y] := bkcolor
+end;
+
+procedure TForm1.EditActionEraseText(const X, Y: integer);
+begin
+  escreen.Character[X, Y] := #0;
+end;
+
+procedure TForm1.EditActionFloodFill(const X, Y: integer);
+var
+  rover: LongWord;
+begin
+  rover := escreen.BackgroundColor[X, Y];
+  if rover <> bkcolor then
+  begin
+    escreen.BackgroundColor[X, Y] := bkcolor;
+    if X > 0 then
+      if escreen.BackgroundColor[X - 1, Y] = rover then
+        EditActionFloodFill(X - 1, Y);
+    if X < SCREENSIZEX - 1 then
+      if escreen.BackgroundColor[X + 1, Y] = rover then
+        EditActionFloodFill(X + 1, Y);
+    if Y > 0 then
+      if escreen.BackgroundColor[X, Y - 1] = rover then
+        EditActionFloodFill(X, Y - 1);
+    if Y < SCREENSIZEY - 1 then
+      if escreen.BackgroundColor[X, Y + 1] = rover then
+        EditActionFloodFill(X, Y + 1);
+  end;
+end;
+
 procedure TForm1.LLeftMousePaintAt(const X, Y: integer);
 begin
   if not lmousedown then
     Exit;
   if FreeDrawSpeedButton.Down then
-    escreen.BackgroundColor[X, Y] := bkcolor;
+    EditActionFreeDrawBackground(X, Y)
+  else if FloodFillSpeedButton.Down then
+    EditActionFloodFill(X, Y)
+  else if EraseTextSpeedButton.Down then
+    EditActionEraseText(X, Y);
 end;
 
 procedure TForm1.LLeftMousePaintTo(const X, Y: integer);
