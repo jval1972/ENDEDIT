@@ -291,23 +291,38 @@ begin
       doblink := pe_char.flags shr 7 <> 0
     else
       doblink := false;
-    for iy := 0 to 7 do
+    if pe_char.code = 0 then
     begin
-      sp := x * 8 + (y * 8 + iy) * 640;
-      fp := cx * 8 + (cy * 8 + iy) * 128;
-      for ix := 0 to 7 do
+      for iy := 0 to 7 do
       begin
-        if DOSFONT[fp] = 0 then
-          buf[sp] := bcolor
-        else
+        sp := x * 8 + (y * 8 + iy) * 640;
+        for ix := 0 to 7 do
         begin
-          if doblink then
+          buf[sp] := bcolor;
+          inc(sp);
+        end;
+      end;
+    end
+    else
+    begin
+      for iy := 0 to 7 do
+      begin
+        sp := x * 8 + (y * 8 + iy) * 640;
+        fp := cx * 8 + (cy * 8 + iy) * 128;
+        for ix := 0 to 7 do
+        begin
+          if DOSFONT[fp] = 0 then
             buf[sp] := bcolor
           else
-            buf[sp] := fcolor
+          begin
+            if doblink then
+              buf[sp] := bcolor
+            else
+              buf[sp] := fcolor
+          end;
+          inc(sp);
+          inc(fp);
         end;
-        inc(sp);
-        inc(fp);
       end;
     end;
     inc(pe_char);
