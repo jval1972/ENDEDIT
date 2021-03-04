@@ -1534,6 +1534,7 @@ object Form1: TForm1
         FCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFC
         FCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFCFC}
       Layout = blGlyphTop
+      OnClick = Save1Click
     end
     object CopySpeedButton1: TSpeedButton
       Left = 188
