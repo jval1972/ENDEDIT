@@ -415,15 +415,15 @@ begin
 
     for x := 1 to SCREENSIZEX - 1 do
     begin
-      drawbuffer.Canvas.MoveTo(x * stepw, 0);
-      drawbuffer.Canvas.LineTo(x * stepw, drawbuffer.Height);
+      drawbuffer.Canvas.MoveTo(x * stepw - 1, 0);
+      drawbuffer.Canvas.LineTo(x * stepw - 1, drawbuffer.Height);
     end;
 
     steph := drawbuffer.Height div SCREENSIZEY;
     for y := 1 to SCREENSIZEY - 1 do
     begin
-      drawbuffer.Canvas.MoveTo(0, y * steph);
-      drawbuffer.Canvas.LineTo(drawbuffer.Width, y * steph);
+      drawbuffer.Canvas.MoveTo(0, y * steph - 1);
+      drawbuffer.Canvas.LineTo(drawbuffer.Width, y * steph - 1);
     end;
   end;
 
