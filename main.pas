@@ -402,8 +402,8 @@ end;
 procedure TForm1.CreateDrawBuffer;
 begin
   escreen.GetBitmap(buffer, blink);
-  drawbuffer.Width := 640 + 64 * zoom;
-  drawbuffer.Height := 400 + 40 * zoom;
+  drawbuffer.Width := 640 + SCREENSIZEX * zoom;
+  drawbuffer.Height := 400 + (2 * SCREENSIZEY) * zoom;
 
   drawbuffer.Canvas.StretchDraw(Rect(0, 0, drawbuffer.Width, drawbuffer.Height), buffer);
 end;
