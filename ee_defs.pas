@@ -55,7 +55,7 @@ var
   opt_filemenuhistory7: bigstring_t;
   opt_filemenuhistory8: bigstring_t;
   opt_filemenuhistory9: bigstring_t;
-  opt_showgrid: boolean = True;
+  opt_showgrid: boolean = False;
   opt_zoom: integer = 0;
 
 function bigstringtostring(const bs: bigstring_p): string;
