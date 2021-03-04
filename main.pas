@@ -268,11 +268,10 @@ begin
 
   bkpalbitmap := TBitmap.Create;
   bkpalbitmap.Assign(BackgroundPalette1.Picture.Bitmap);
+  HandlePaletteImage(1, 1, BackgroundPalette1, bkpalbitmap, 'BK', bkcolor);
 
   fgpalbitmap := TBitmap.Create;
   fgpalbitmap.Assign(ForegroundPalette1.Picture.Bitmap);
-
-  HandlePaletteImage(1, 1, BackgroundPalette1, bkpalbitmap, 'BK', bkcolor);
   HandlePaletteImage(ForegroundPalette1.Width - 1, ForegroundPalette1.Height - 1, ForegroundPalette1, fgpalbitmap, 'FG', fgcolor);
 
   doCreate := True;
@@ -424,7 +423,7 @@ begin
   if not lmousedown then
     Exit;
   if FreeDrawSpeedButton.Down then
-    escreen.BackgroundColor[X, Y] := RGB(255, 255, 255);
+    escreen.BackgroundColor[X, Y] := bkcolor;
 end;
 
 procedure TForm1.LLeftMousePaintTo(const X, Y: integer);

@@ -1,8 +1,8 @@
 object Form1: TForm1
-  Left = 244
-  Top = 48
-  Width = 1168
-  Height = 692
+  Left = 167
+  Top = 119
+  Width = 966
+  Height = 661
   Caption = 'ENDTEXT Editor'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -1103,7 +1103,7 @@ object Form1: TForm1
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 1152
+    Width = 950
     Height = 62
     Align = alTop
     Caption = ' '
@@ -2364,8 +2364,8 @@ object Form1: TForm1
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 614
-    Width = 1152
+    Top = 583
+    Width = 950
     Height = 19
     Panels = <
       item
@@ -2376,7 +2376,7 @@ object Form1: TForm1
     Left = 0
     Top = 62
     Width = 153
-    Height = 552
+    Height = 521
     Align = alLeft
     Caption = ' '
     Color = 16579836
@@ -3730,7 +3730,7 @@ object Form1: TForm1
         Top = 4
         Width = 23
         Height = 22
-        Hint = 'Free draw'
+        Hint = 'Free draw background'
         GroupIndex = 1
         Down = True
         Flat = True
@@ -3881,7 +3881,7 @@ object Form1: TForm1
         Top = 52
         Width = 23
         Height = 22
-        Hint = 'Eraser'
+        Hint = 'Erase text'
         GroupIndex = 1
         Flat = True
         Glyph.Data = {
@@ -4018,8 +4018,8 @@ object Form1: TForm1
   object Panel4: TPanel
     Left = 153
     Top = 62
-    Width = 999
-    Height = 552
+    Width = 797
+    Height = 521
     Align = alClient
     BevelOuter = bvNone
     Caption = ' '
@@ -4027,8 +4027,8 @@ object Form1: TForm1
     object ScrollBox1: TScrollBox
       Left = 0
       Top = 0
-      Width = 999
-      Height = 552
+      Width = 797
+      Height = 521
       Align = alClient
       BevelEdges = []
       BevelInner = bvNone
