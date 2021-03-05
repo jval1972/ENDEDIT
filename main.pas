@@ -112,6 +112,7 @@ type
     EraseTextSpeedButton: TSpeedButton;
     TextSpeedButton: TSpeedButton;
     EclipseSpeedButton: TSpeedButton;
+    FilledEclipseSpeedButton: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure PaintBox1Paint(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -158,6 +159,7 @@ type
     procedure FormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure EclipseSpeedButtonClick(Sender: TObject);
+    procedure FilledEclipseSpeedButtonClick(Sender: TObject);
   private
     { Private declarations }
     buffer: TBitmap;
@@ -685,7 +687,9 @@ begin
   else if lcursordown then
     EditActionText(X, Y)
   else if EclipseSpeedButton.Down then
-    EditActionEclipse(X, Y);
+    EditActionEclipse(X, Y)
+  else if FilledEclipseSpeedButton.Down then
+    EditActionFillEclipse(X, Y);
 end;
 
 procedure TForm1.LLeftMousePaintTo(const X, Y: integer);
@@ -1229,6 +1233,14 @@ begin
 end;
 
 procedure TForm1.EclipseSpeedButtonClick(Sender: TObject);
+begin
+  lmouserecalcdown := False;
+  lmousetraceposition := False;
+  lmouseclearonmove := True;
+end;
+
+
+procedure TForm1.FilledEclipseSpeedButtonClick(Sender: TObject);
 begin
   lmouserecalcdown := False;
   lmousetraceposition := False;
