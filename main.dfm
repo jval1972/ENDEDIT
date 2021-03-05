@@ -2862,6 +2862,7 @@ object Form1: TForm1
           Top = 28
           Width = 96
           Height = 48
+          Cursor = crHandPoint
           Picture.Data = {
             07544269746D617036360000424D363600000000000036000000280000006000
             000030000000010018000000000000360000230B0000230B0000000000000000
@@ -3324,6 +3325,7 @@ object Form1: TForm1
           Top = 28
           Width = 96
           Height = 96
+          Cursor = crHandPoint
           AutoSize = True
           Picture.Data = {
             07544269746D6170366C0000424D366C00000000000036000000280000006000
@@ -4219,6 +4221,7 @@ object Form1: TForm1
           Top = 28
           Width = 96
           Height = 128
+          Cursor = crHandPoint
           AutoSize = True
           Picture.Data = {
             07544269746D617036900000424D369000000000000036000000280000006000
