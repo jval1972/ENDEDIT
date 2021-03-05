@@ -154,6 +154,8 @@ type
     procedure TextSpeedButtonClick(Sender: TObject);
     procedure CursorBlinkTimerTimer(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
+    procedure FormKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   private
     { Private declarations }
     buffer: TBitmap;
@@ -1169,6 +1171,85 @@ begin
       inc(lcursory);
       needsupdate := True;
     end;
+  end;
+end;
+
+procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if not lcursordown then
+    Exit;
+
+  if not (Shift = []) then
+    Exit;
+
+  case key of
+    VK_DELETE:
+      if escreen.Character[lcursorx, lcursory] <> ' ' then
+      begin
+        undoManager.SaveUndo;
+        changed := True;
+        escreen.Character[lcursorx, lcursory] := ' ';
+        needsupdate := True;
+      end;
+    VK_END:
+      begin
+        lcursorx := SCREENSIZEX - 1;
+        needsupdate := True;
+      end;
+    VK_HOME:
+      begin
+        lcursorx := 0;
+        needsupdate := True;
+      end;
+    VK_LEFT:
+      begin
+        if lcursorx > 0 then
+        begin
+          dec(lcursorx);
+          needsupdate := True;
+        end;
+      end;
+    VK_RIGHT:
+      begin
+        if lcursorx < SCREENSIZEX - 1 then
+        begin
+          inc(lcursorx);
+          needsupdate := True;
+        end;
+      end;
+    VK_DOWN:
+      begin
+        if lcursory < SCREENSIZEY - 1 then
+        begin
+          inc(lcursory);
+          needsupdate := True;
+        end;
+      end;
+    VK_UP:
+      begin
+        if lcursory > 0 then
+        begin
+          dec(lcursory);
+          needsupdate := True;
+        end;
+      end;
+    33: // Page Up
+      begin
+        if lcursory > 4 then
+          dec(lcursory, 5)
+        else
+          lcursory := 0;
+        needsupdate := True;
+      end;
+    34: // Page Down
+      begin
+        if lcursory < SCREENSIZEY - 5 then
+          inc(lcursory, 5)
+        else
+          lcursory := SCREENSIZEY - 1;
+        needsupdate := True;
+      end;
   end;
 end;
 
