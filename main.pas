@@ -111,6 +111,7 @@ type
     FloodFillSpeedButton: TSpeedButton;
     RectSpeedButton: TSpeedButton;
     FillRectSpeedButton: TSpeedButton;
+    LineSpeedButton: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure PaintBox1Paint(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -150,6 +151,7 @@ type
     procedure FloodFillSpeedButtonClick(Sender: TObject);
     procedure RectSpeedButtonClick(Sender: TObject);
     procedure FillRectSpeedButtonClick(Sender: TObject);
+    procedure LineSpeedButtonClick(Sender: TObject);
   private
     { Private declarations }
     buffer: TBitmap;
@@ -166,8 +168,11 @@ type
     lmousedown: boolean;
     lmouserecalcdown: boolean;
     lmousetraceposition: boolean;
+    lmouseclearonmove: boolean;
     lmousedownx, lmousedowny: integer;
     lmousemovex, lmousemovey: integer;
+    lcursoractive: boolean;
+    lcursorx, lcursory: integer;
     bkcolor, fgcolor: LongWord;
     bkpalbitmap, fgpalbitmap: TBitmap;
     closing: boolean;
@@ -199,6 +204,7 @@ type
     procedure EditActionFloodFill(const X, Y: integer);
     procedure EditActionRect(const X, Y: integer);
     procedure EditActionFillRect(const X, Y: integer);
+    procedure EditActionLine(const X, Y: integer);
   public
     { Public declarations }
   end;
@@ -229,10 +235,15 @@ begin
   lmousedown := False;
   lmouserecalcdown := True;
   lmousetraceposition := True;
+  lmouseclearonmove := False;
   lmousedownx := 0;
   lmousedowny := 0;
   lmousemovex := 0;
   lmousemovey := 0;
+
+  lcursoractive := False;
+  lcursorx := 0;
+  lcursory := 0;
 
   buffer := TBitmap.Create;
   buffer.Width := 640;
@@ -508,6 +519,11 @@ begin
       escreen.BackgroundColor[i, j] := bkcolor;
 end;
 
+procedure TForm1.EditActionLine(const X, Y: integer);
+begin
+  escreen.BackgroundColor[X, Y] := bkcolor
+end;
+
 procedure TForm1.LLeftMousePaintAt(const X, Y: integer);
 begin
   if not lmousedown then
@@ -521,7 +537,9 @@ begin
   else if RectSpeedButton.Down then
     EditActionRect(X, Y)
   else if FillRectSpeedButton.Down then
-    EditActionFillRect(X, Y);
+    EditActionFillRect(X, Y)
+  else if LineSpeedButton.Down then
+    EditActionLine(X, Y);
 end;
 
 procedure TForm1.LLeftMousePaintTo(const X, Y: integer);
@@ -534,6 +552,9 @@ var
 begin
   if not lmousedown then
     Exit;
+
+  if lmouseclearonmove then
+    escreen.AssignTo(backscreen);
 
   if lmousetraceposition then
   begin
@@ -588,7 +609,6 @@ begin
   end
   else
   begin
-    escreen.AssignTo(backscreen);
     LLeftMousePaintAt(X, Y);
   end;
   Changed := True;
@@ -631,7 +651,12 @@ procedure TForm1.PaintBox1MouseMove(Sender: TObject; Shift: TShiftState; X,
 begin
   lmousemovex := ZoomValueX(X);
   lmousemovey := ZoomValueY(Y);
-  StatusBar1.SimpleText := Format('(%d, %d)', [lmousemovex, lmousemovey]);
+  StatusBar1.SimpleText := Format(
+    'Position: (%d, %d), Background: (#%s), Foreground: (#%s), Text: (#%s)',
+      [lmousemovex, lmousemovey,
+       IntToHex(escreen.BackgroundColor[lmousemovex, lmousemovey], 6),
+       IntToHex(escreen.ForegroundColor[lmousemovex, lmousemovey], 6),
+       IntToHex(Ord(escreen.Character[lmousemovex, lmousemovey]), 2)]);
   if lmousedown then
   begin
     LLeftMousePaintTo(lmousemovex, lmousemovey);
@@ -988,30 +1013,42 @@ procedure TForm1.FreeDrawSpeedButtonClick(Sender: TObject);
 begin
   lmouserecalcdown := True;
   lmousetraceposition := True;
+  lmouseclearonmove := False;
 end;
 
 procedure TForm1.EraseTextSpeedButtonClick(Sender: TObject);
 begin
   lmouserecalcdown := True;
   lmousetraceposition := True;
+  lmouseclearonmove := False;
 end;
 
 procedure TForm1.FloodFillSpeedButtonClick(Sender: TObject);
 begin
   lmouserecalcdown := True;
   lmousetraceposition := False;
+  lmouseclearonmove := True;
 end;
 
 procedure TForm1.RectSpeedButtonClick(Sender: TObject);
 begin
   lmouserecalcdown := False;
   lmousetraceposition := False;
+  lmouseclearonmove := True;
 end;
 
 procedure TForm1.FillRectSpeedButtonClick(Sender: TObject);
 begin
   lmouserecalcdown := False;
   lmousetraceposition := False;
+  lmouseclearonmove := True;
+end;
+
+procedure TForm1.LineSpeedButtonClick(Sender: TObject);
+begin
+  lmouserecalcdown := False;
+  lmousetraceposition := True;
+  lmouseclearonmove := True;
 end;
 
 end.
