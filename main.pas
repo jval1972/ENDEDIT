@@ -215,7 +215,9 @@ type
     procedure EditActionFillRect(const X, Y: integer);
     procedure EditActionLine(const X, Y: integer);
     procedure EditActionText(const X, Y: integer);
+    procedure midpointellipse(const X, Y: integer; const filled: boolean);
     procedure EditActionEclipse(const X, Y: integer);
+    procedure EditActionFillEclipse(const X, Y: integer);
   public
     { Public declarations }
   end;
@@ -550,12 +552,13 @@ begin
   lcursory := Y;
 end;
 
-procedure TForm1.EditActionEclipse(const X, Y: integer);
+procedure TForm1.midpointellipse(const X, Y: integer; const filled: boolean);
 // midpoint ellipse algorithm
 var
   rx, ry, xc, yc: integer;
   dx, dy, d1, d2: single;
   xx, yy: integer;
+  i: integer;
 
   procedure _draw_point(const ax, ay: integer);
   begin
@@ -587,6 +590,13 @@ begin
     _draw_point(-xx + xc, yy + yc);
     _draw_point(xx + xc, -yy + yc);
     _draw_point(-xx + xc, -yy + yc);
+
+    if filled then
+      for i := -xx + xc + 1 to xx + xc - 1 do
+      begin
+        _draw_point(i, yy + yc);
+        _draw_point(i, -yy + yc);
+      end;
 
     // Checking and updating value of
     // decision parameter based on algorithm
@@ -620,6 +630,13 @@ begin
     _draw_point(xx + xc, -yy + yc);
     _draw_point(-xx + xc, -yy + yc);
 
+    if filled then
+      for i := -xx + xc + 1 to xx + xc - 1 do
+      begin
+        _draw_point(i, yy + yc);
+        _draw_point(i, -yy + yc);
+      end;
+
     // Checking and updating parameter
     // value based on algorithm
     if d2 > 0 then
@@ -637,6 +654,16 @@ begin
       d2 := d2 + dx - dy + (rx * rx);
     end;
   end;
+end;
+
+procedure TForm1.EditActionEclipse(const X, Y: integer);
+begin
+  midpointellipse(X, Y, False);
+end;
+
+procedure TForm1.EditActionFillEclipse(const X, Y: integer);
+begin
+  midpointellipse(X, Y, True);
 end;
 
 procedure TForm1.LLeftMousePaintAt(const X, Y: integer);
