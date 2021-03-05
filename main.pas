@@ -178,6 +178,7 @@ type
     procedure DoLoadUndo(const s: TStream);
     procedure DoSaveUndo(const s: TStream);
     function DoLoadFromFile(const aname: string): boolean;
+    procedure FileNotFoundMsg(const aname: string);
     procedure DoSaveToFile(const aname: string);
     procedure OnLoadFileMenuHistory(Sender: TObject; const aname: string);
     function CheckCanClose: boolean;
@@ -273,7 +274,7 @@ begin
 
   bkpalbitmap := TBitmap.Create;
   bkpalbitmap.Assign(BackgroundPalette1.Picture.Bitmap);
-  HandlePaletteImage(1, 1, BackgroundPalette1, bkpalbitmap, 'BK', bkcolor);
+  HandlePaletteImage(BackgroundPalette1.Width - 1, BackgroundPalette1.Height - 1, BackgroundPalette1, bkpalbitmap, 'BK', bkcolor);
 
   fgpalbitmap := TBitmap.Create;
   fgpalbitmap.Assign(ForegroundPalette1.Picture.Bitmap);
@@ -398,7 +399,8 @@ begin
     Exit;
 
   if OpenDialog1.Execute then
-    DoLoadFromFile(OpenDialog1.FileName);
+    if not DoLoadFromFile(OpenDialog1.FileName) then
+      FileNotFoundMsg(OpenDialog1.FileName);
 end;
 
 procedure TForm1.InvalidatePaintBox;
@@ -563,10 +565,11 @@ end;
 procedure TForm1.PaintBox1MouseMove(Sender: TObject; Shift: TShiftState; X,
   Y: Integer);
 begin
+  lmousemovex := ZoomValueX(X);
+  lmousemovey := ZoomValueY(Y);
+  StatusBar1.SimpleText := Format('(%d, %d)', [lmousemovex, lmousemovey]);
   if lmousedown then
   begin
-    lmousemovex := ZoomValueX(X);
-    lmousemovey := ZoomValueY(Y);
     LLeftMousePaintTo(lmousemovex, lmousemovey);
     lmousedownx := ZoomValueX(X);
     lmousedowny := ZoomValueY(Y);
@@ -692,6 +695,11 @@ begin
   end;
 end;
 
+procedure TForm1.FileNotFoundMsg(const aname: string);
+begin
+  ShowMessage(Format('Can not find file %s', [mkshortname(aname)]));
+end;
+
 procedure TForm1.DoSaveToFile(const aname: string);
 var
   fs: TFileStream;
@@ -711,7 +719,8 @@ end;
 procedure TForm1.OnLoadFileMenuHistory(Sender: TObject; const aname: string);
 begin
   if CheckCanClose then
-    DoLoadFromFile(aname);
+    if not DoLoadFromFile(aname) then
+      FileNotFoundMsg(aname);
 end;
 
 procedure TForm1.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
