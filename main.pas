@@ -99,7 +99,7 @@ type
     ZoomInSpeedButton1: TSpeedButton;
     ForegroundPalette1: TImage;
     ToolPanel: TPanel;
-    ColorPickerSpeedButton: TSpeedButton;
+    TextSpeedButton: TSpeedButton;
     EraseTextSpeedButton: TSpeedButton;
     ElevateSpeedButton: TSpeedButton;
     PaletteSpeedButton1: TSpeedButton;
@@ -112,6 +112,7 @@ type
     RectSpeedButton: TSpeedButton;
     FillRectSpeedButton: TSpeedButton;
     LineSpeedButton: TSpeedButton;
+    CursorBlinkTimer: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure PaintBox1Paint(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -152,6 +153,9 @@ type
     procedure RectSpeedButtonClick(Sender: TObject);
     procedure FillRectSpeedButtonClick(Sender: TObject);
     procedure LineSpeedButtonClick(Sender: TObject);
+    procedure TextSpeedButtonClick(Sender: TObject);
+    procedure CursorBlinkTimerTimer(Sender: TObject);
+    procedure FormKeyPress(Sender: TObject; var Key: Char);
   private
     { Private declarations }
     buffer: TBitmap;
@@ -171,8 +175,8 @@ type
     lmouseclearonmove: boolean;
     lmousedownx, lmousedowny: integer;
     lmousemovex, lmousemovey: integer;
-    lcursoractive: boolean;
     lcursorx, lcursory: integer;
+    lcursortic: LongWord;
     bkcolor, fgcolor: LongWord;
     bkpalbitmap, fgpalbitmap: TBitmap;
     closing: boolean;
@@ -181,11 +185,13 @@ type
     procedure UpdateEnable;
     procedure InvalidatePaintBox;
     procedure DrawGrid;
+    procedure DrawCursor;
     function ZoomValueX(const X: Integer): Integer;
     function ZoomValueY(const Y: Integer): Integer;
     procedure LLeftMousePaintAt(const X, Y: integer);
     procedure LLeftMousePaintTo(const X, Y: integer);
     procedure CreateDrawBuffer;
+    procedure DoPrepareEditor;
     procedure DoCreateNew;
     procedure DoLoadFromStream(const s: TStream);
     procedure DoSaveToStream(const s: TStream);
@@ -199,12 +205,14 @@ type
     procedure SetFileName(const fname: string);
     procedure HandlePaletteImage(const X, Y: integer; const Palette1: TImage;
       const palbitmap: TBitmap; const tx: string; var cc: LongWord);
+    function lcursordown: boolean;
     procedure EditActionFreeDrawBackground(const X, Y: integer);
     procedure EditActionEraseText(const X, Y: integer);
     procedure EditActionFloodFill(const X, Y: integer);
     procedure EditActionRect(const X, Y: integer);
     procedure EditActionFillRect(const X, Y: integer);
     procedure EditActionLine(const X, Y: integer);
+    procedure EditActionText(const X, Y: integer);
   public
     { Public declarations }
   end;
@@ -241,9 +249,9 @@ begin
   lmousemovex := 0;
   lmousemovey := 0;
 
-  lcursoractive := False;
   lcursorx := 0;
   lcursory := 0;
+  lcursortic := 0;
 
   buffer := TBitmap.Create;
   buffer.Width := 640;
@@ -434,6 +442,10 @@ begin
   CreateDrawBuffer;
   PaintBox1.Width := drawbuffer.Width;
   PaintBox1.Height := drawbuffer.Height;
+  if TextSpeedButton.Down then
+    PaintBox1.Cursor := crIBeam
+  else
+    PaintBox1.Cursor := crCross;
   PaintBox1.Invalidate;
 end;
 
@@ -449,6 +461,11 @@ begin
   Paste1.Enabled := Clipboard.HasFormat(CF_BITMAP);
   Undo1.Enabled := undoManager.CanUndo;
   Redo1.Enabled := undoManager.CanRedo;
+end;
+
+function TForm1.lcursordown: boolean;
+begin
+  Result := TextSpeedButton.Down;
 end;
 
 procedure TForm1.EditActionFreeDrawBackground(const X, Y: integer);
@@ -524,6 +541,12 @@ begin
   escreen.BackgroundColor[X, Y] := bkcolor
 end;
 
+procedure TForm1.EditActionText(const X, Y: integer);
+begin
+  lcursorx := X;
+  lcursory := Y;
+end;
+
 procedure TForm1.LLeftMousePaintAt(const X, Y: integer);
 begin
   if not lmousedown then
@@ -539,7 +562,9 @@ begin
   else if FillRectSpeedButton.Down then
     EditActionFillRect(X, Y)
   else if LineSpeedButton.Down then
-    EditActionLine(X, Y);
+    EditActionLine(X, Y)
+  else if lcursordown then
+    EditActionText(X, Y);
 end;
 
 procedure TForm1.LLeftMousePaintTo(const X, Y: integer);
@@ -611,7 +636,8 @@ begin
   begin
     LLeftMousePaintAt(X, Y);
   end;
-  Changed := True;
+  if not lcursordown then
+    Changed := True;
   InvalidatePaintBox;
 end;
 
@@ -695,6 +721,29 @@ begin
 
 end;
 
+procedure TForm1.DrawCursor;
+var
+  stepw, steph: integer;
+begin
+  if lcursordown then
+  begin
+    drawbuffer.Canvas.Pen.Style := psSolid;
+    if Odd(lcursortic) then
+      drawbuffer.Canvas.Pen.Color := RGB(255, 255, 255)
+    else
+      drawbuffer.Canvas.Pen.Color := RGB(0, 0, 0);
+
+    stepw := drawbuffer.Width div SCREENSIZEX;
+    steph := drawbuffer.Height div SCREENSIZEY;
+
+    drawbuffer.Canvas.MoveTo(lcursorx * stepw, lcursory * steph);
+    drawbuffer.Canvas.LineTo(lcursorx * stepw, (lcursory + 1) * steph - 2);
+    drawbuffer.Canvas.LineTo((lcursorx + 1) * stepw - 2, (lcursory + 1) * steph - 2);
+    drawbuffer.Canvas.LineTo((lcursorx + 1) * stepw - 2, lcursory * steph);
+    drawbuffer.Canvas.LineTo(lcursorx * stepw, lcursory * steph);
+  end;
+end;
+
 function TForm1.ZoomValueX(const X: Integer): Integer;
 begin
   Result := GetIntInRange(X div (drawbuffer.Width div SCREENSIZEX), 0, SCREENSIZEX - 1);
@@ -713,6 +762,7 @@ begin
 
   drawbuffer.Canvas.StretchDraw(Rect(0, 0, drawbuffer.Width, drawbuffer.Height), buffer);
   DrawGrid;
+  DrawCursor;
 end;
 
 procedure TForm1.Undo1Click(Sender: TObject);
@@ -732,13 +782,21 @@ begin
   filemenuhistory.RefreshMenuItems;
 end;
 
+procedure TForm1.DoPrepareEditor;
+begin
+  lcursorx := 0;
+  lcursory := 0;
+  lcursortic := 0;
+  undoManager.Clear;
+  blink := False;
+  changed := False;
+end;
+
 procedure TForm1.DoCreateNew;
 begin
   escreen.Clear;
-  undoManager.Clear;
-  blink := False;
+  DoPrepareEditor;
   SetFileName('');
-  changed := False;
 end;
 
 procedure TForm1.DoLoadFromStream(const s: TStream);
@@ -773,15 +831,13 @@ begin
     Exit;
   end;
 
-  undoManager.Clear;
-  blink := False;
   Result := True;
   fs := TFileStream.Create(aname, fmOpenRead);
   try
     DoLoadFromStream(fs);
+    DoPrepareEditor;
     SetFileName(aname);
     filemenuhistory.AddPath(aname);
-    changed := False;
   finally
     fs.Free;
   end;
@@ -1049,6 +1105,62 @@ begin
   lmouserecalcdown := False;
   lmousetraceposition := True;
   lmouseclearonmove := True;
+end;
+
+procedure TForm1.TextSpeedButtonClick(Sender: TObject);
+begin
+  lmouserecalcdown := False;
+  lmousetraceposition := False;
+  lmouseclearonmove := False;
+end;
+
+procedure TForm1.CursorBlinkTimerTimer(Sender: TObject);
+begin
+  if lcursordown then
+  begin
+    inc(lcursortic);
+    needsupdate := True;
+  end;
+end;
+
+procedure TForm1.FormKeyPress(Sender: TObject; var Key: Char);
+begin
+  if not lcursordown then
+    Exit;
+
+  if key in [#32..#128] then
+  begin
+    escreen.ForegroundColor[lcursorx, lcursory] := fgcolor;
+    if escreen.Character[lcursorx, lcursory] <> key then
+    begin
+      undoManager.SaveUndo;
+      escreen.Character[lcursorx, lcursory] := key;
+      needsupdate := True;
+    end;
+    if lcursorx < SCREENSIZEX - 1 then
+      inc(lcursorx)
+    else if lcursory < SCREENSIZEY - 1 then
+    begin
+      lcursorx := 0;
+      inc(lcursory);
+    end;
+  end
+  else if key = #8 then
+  begin
+    if lcursorx > 0 then
+      dec(lcursorx)
+    else if lcursory > 0 then
+    begin
+      lcursorx := SCREENSIZEX - 1;
+      dec(lcursory);
+    end;
+    if escreen.Character[lcursorx, lcursory] <> ' ' then
+    begin
+      undoManager.SaveUndo;
+      escreen.Character[lcursorx, lcursory] := ' ';
+      needsupdate := True;
+    end;
+  end
 end;
 
 end.
