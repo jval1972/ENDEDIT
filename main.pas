@@ -1132,6 +1132,7 @@ begin
     if escreen.Character[lcursorx, lcursory] <> key then
     begin
       undoManager.SaveUndo;
+      changed := True;
       escreen.Character[lcursorx, lcursory] := key;
       needsupdate := True;
     end;
@@ -1155,6 +1156,7 @@ begin
     if escreen.Character[lcursorx, lcursory] <> ' ' then
     begin
       undoManager.SaveUndo;
+      changed := True;
       escreen.Character[lcursorx, lcursory] := ' ';
       needsupdate := True;
     end;
