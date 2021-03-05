@@ -2379,7 +2379,7 @@ object Form1: TForm1
   object LeftPanel: TPanel
     Left = 0
     Top = 62
-    Width = 161
+    Width = 137
     Height = 580
     Align = alLeft
     BorderWidth = 4
@@ -2389,14 +2389,21 @@ object Form1: TForm1
     object ToolPanel: TPanel
       Left = 5
       Top = 5
-      Width = 151
+      Width = 127
       Height = 564
       Align = alTop
       Caption = ' '
       TabOrder = 0
+      object Shape1: TShape
+        Left = 8
+        Top = 88
+        Width = 105
+        Height = 57
+        Pen.Style = psClear
+      end
       object FreeDrawSpeedButton: TSpeedButton
         Left = 12
-        Top = 100
+        Top = 92
         Width = 23
         Height = 22
         Hint = 'Free Draw'
@@ -2448,7 +2455,7 @@ object Form1: TForm1
       end
       object FloodFillSpeedButton: TSpeedButton
         Left = 84
-        Top = 100
+        Top = 92
         Width = 23
         Height = 22
         Hint = 'Flood Fill'
@@ -2499,7 +2506,7 @@ object Form1: TForm1
       end
       object RectSpeedButton: TSpeedButton
         Left = 12
-        Top = 132
+        Top = 116
         Width = 23
         Height = 22
         Hint = 'Rectangle'
@@ -2551,7 +2558,7 @@ object Form1: TForm1
       end
       object FillRectSpeedButton: TSpeedButton
         Left = 36
-        Top = 132
+        Top = 116
         Width = 23
         Height = 22
         Hint = 'Filled Rectangle'
@@ -2603,7 +2610,7 @@ object Form1: TForm1
       end
       object LineSpeedButton: TSpeedButton
         Left = 36
-        Top = 100
+        Top = 92
         Width = 23
         Height = 22
         Hint = 'Line'
@@ -2655,7 +2662,7 @@ object Form1: TForm1
       end
       object EraseTextSpeedButton: TSpeedButton
         Left = 36
-        Top = 308
+        Top = 276
         Width = 23
         Height = 22
         Hint = 'Erase text'
@@ -2695,7 +2702,7 @@ object Form1: TForm1
       end
       object TextSpeedButton: TSpeedButton
         Left = 12
-        Top = 308
+        Top = 276
         Width = 23
         Height = 22
         Hint = 'Text'
@@ -2747,7 +2754,7 @@ object Form1: TForm1
       end
       object EclipseSpeedButton: TSpeedButton
         Left = 60
-        Top = 132
+        Top = 116
         Width = 23
         Height = 22
         Hint = 'Eclipse'
@@ -2799,7 +2806,7 @@ object Form1: TForm1
       end
       object FilledEclipseSpeedButton: TSpeedButton
         Left = 84
-        Top = 132
+        Top = 116
         Width = 23
         Height = 22
         Hint = 'Filled Eclipse'
@@ -2851,7 +2858,7 @@ object Form1: TForm1
       end
       object SpecialCharSpeedButton: TSpeedButton
         Left = 12
-        Top = 508
+        Top = 468
         Width = 23
         Height = 22
         Hint = 'Character Drawing'
@@ -2900,6 +2907,57 @@ object Form1: TForm1
           F0F0F0F0F0F0F0F0F0F0}
         Layout = blGlyphRight
         OnClick = SpecialCharSpeedButtonClick
+      end
+      object TextColorChangeSpeedButton: TSpeedButton
+        Left = 60
+        Top = 276
+        Width = 23
+        Height = 22
+        Hint = 'Change Text Color'
+        GroupIndex = 1
+        Flat = True
+        Glyph.Data = {
+          E6040000424DE604000000000000360000002800000014000000140000000100
+          180000000000B0040000130B0000130B00000000000000000000F0F0F0F0F0F0
+          F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
+          F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
+          F0F0F0F0F0F0F0F0EFEFEFDDCBD9C69DBCBB89B0957BC7A894CFD0C8E2F0F0F0
+          F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
+          F0D3B7C3A2569092367C92367C91357C4B1DA64B1DA64B1DA66A45B4BABAE9F0
+          F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0EFEEEEB8808E902E46
+          91346F92367C92367C91357C4B1DA64B1DA64B1DA64022B82333EB7F88EDEFEF
+          EFF0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0B87F8C902E46902E46902F5091
+          357B92367C91357C4B1DA64B1DA64A1DA7292FE02333EC2333EC7F88EDF0F0F0
+          F0F0F0F0F0F0F0F0F0F0F0F0D4B7BA902E46902E46902E46902E469132679236
+          7C91357C4B1DA64B1DA63A26C32333EC2333EC2333EC2333ECB6BEEFF0F0F0F0
+          F0F0F0F0F0EFEFEFB37259A24F40943544902E46902E46902E4A91357991357C
+          4B1DA6481EAB2531E72333EC2333EC2239EC224CEE4872EFF0F0F0F0F0F0F0F0
+          F0DFCDC6A95C3EA95C3EA85B3E9E4841913145902E4690315E91357C4B1DA633
+          29CE2333EC2236EC2247ED2254EE2255EF2255EFC8D1EFF0F0F0F0F0F0CEA99B
+          A95C3EA95C3EA95C3EA95C3EA7583E9A4142902E479034744420B22333EB2242
+          ED2253EE2255EF2255EF2255EF2255EF96ACEFF0F0F0F0F0F0C59886A95C3EA9
+          5C3EA95C3EA95C3EA95C3EA95C3EA4543F963C542D37DA2250EE2255EF2255EF
+          2255EF2255EF2255EF2255EF7E9AEFF0F0F0F0F0F0DAB766CC9107CC9107CC91
+          07CC9107CC9107CC9107B4951665B36B21BDF71B9EF81D99F81D99F81D99F81D
+          99F81D99F81D99F87BBFF4F0F0F0F0F0F0DEC280CC9107CC9107CC9107CC9107
+          C2930D7DA13C46AD653AD5BE33E3F615BAF718ABF81C9BF81D99F81D99F81D99
+          F81D99F893C9F3F0F0F0F0F0F0E7D9B9CC9107CC9107C99108929C2E4EAB5D45
+          AD643FC29439DCCD39EBF624CFF715BAF815B7F819A6F81C99F81D99F81D99F8
+          C7DFF1F0F0F0F0F0F0EFEFEED19F2AA698205BA85445AD6445AD6443B16D39D9
+          C739DCCD39EBF636E7F617BDF715BAF815BAF816B3F81AA1F843A9F6EFEFF0F0
+          F0F0F0F0F0F0F0F0C5D8BB45AC6345AD6445AD6445AD643DC9A439DCCD39DCCD
+          39EBF639EBF62AD7F615BAF815BAF815BAF815BAF7B2DDF2F0F0F0F0F0F0F0F0
+          F0F0F0F0F0F0F08BC89D45AD6445AD6442B67939DBCC39DCCD39DCCD39EBF639
+          EBF638EAF61BC2F715BAF815BAF877D2F4F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
+          F0F0F0EEEFEE8CC89E44AD643BD1B439DCCD39DCCD39DCCD39EBF639EBF639EB
+          F62FDEF615BAF777D2F4EEEFF0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
+          F0F0F0F0F0BBE0D158DFD339DCCD39DCCD39DCCD39EBF639EBF639EBF65CEBF4
+          B5E5F2F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
+          F0F0F0F0EFEFEFCBECE99EE7E08AE5DD8BEDF3A0EDF2CDEFF1F0F0F0F0F0F0F0
+          F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
+          F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
+          F0F0F0F0F0F0F0F0F0F0}
+        OnClick = TextColorChangeSpeedButtonClick
       end
       object BackgroundPalettePanel1: TPanel
         Left = 8
@@ -3366,7 +3424,7 @@ object Form1: TForm1
       end
       object ForegroundPalettePanel1: TPanel
         Left = 8
-        Top = 168
+        Top = 144
         Width = 104
         Height = 128
         Caption = ' '
@@ -4262,7 +4320,7 @@ object Form1: TForm1
       end
       object SpecialCharactersPanel1: TPanel
         Left = 8
-        Top = 344
+        Top = 304
         Width = 104
         Height = 160
         Caption = ' '
@@ -5447,9 +5505,9 @@ object Form1: TForm1
     end
   end
   object Panel4: TPanel
-    Left = 161
+    Left = 137
     Top = 62
-    Width = 665
+    Width = 689
     Height = 580
     Align = alClient
     BevelOuter = bvNone
@@ -5458,7 +5516,7 @@ object Form1: TForm1
     object ScrollBox1: TScrollBox
       Left = 0
       Top = 0
-      Width = 665
+      Width = 689
       Height = 580
       Align = alClient
       BevelEdges = []

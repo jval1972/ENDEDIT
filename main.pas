@@ -118,6 +118,8 @@ type
     SpecialCharacters1: TImage;
     Panel3: TPanel;
     SpecialCharSpeedButton: TSpeedButton;
+    TextColorChangeSpeedButton: TSpeedButton;
+    Shape1: TShape;
     procedure FormCreate(Sender: TObject);
     procedure PaintBox1Paint(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -159,6 +161,7 @@ type
     procedure FillRectSpeedButtonClick(Sender: TObject);
     procedure LineSpeedButtonClick(Sender: TObject);
     procedure TextSpeedButtonClick(Sender: TObject);
+    procedure TextColorChangeSpeedButtonClick(Sender: TObject);
     procedure SpecialCharSpeedButtonClick(Sender: TObject);
     procedure CursorBlinkTimerTimer(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
@@ -234,6 +237,7 @@ type
     procedure EditActionEclipse(const X, Y: integer);
     procedure EditActionFillEclipse(const X, Y: integer);
     procedure EditActionSpecialCharacter(const X, Y: integer);
+    procedure EditActionTextColorChange(const X, Y: integer);
   public
     { Public declarations }
   end;
@@ -693,6 +697,11 @@ begin
   escreen.Character[X, Y] := specialchar;
 end;
 
+procedure TForm1.EditActionTextColorChange(const X, Y: integer);
+begin
+  escreen.ForegroundColor[X, Y] := fgcolor;
+end;
+
 procedure TForm1.LLeftMousePaintAt(const X, Y: integer);
 begin
   if not lmousedown then
@@ -716,7 +725,9 @@ begin
   else if FilledEclipseSpeedButton.Down then
     EditActionFillEclipse(X, Y)
   else if SpecialCharSpeedButton.Down then
-    EditActionSpecialCharacter(X, Y);
+    EditActionSpecialCharacter(X, Y)
+  else if TextColorChangeSpeedButton.Down then
+    EditActionTextColorChange(X, Y);
 end;
 
 procedure TForm1.LLeftMousePaintTo(const X, Y: integer);
@@ -1331,6 +1342,13 @@ procedure TForm1.TextSpeedButtonClick(Sender: TObject);
 begin
   lmouserecalcdown := False;
   lmousetraceposition := False;
+  lmouseclearonmove := False;
+end;
+
+procedure TForm1.TextColorChangeSpeedButtonClick(Sender: TObject);
+begin
+  lmouserecalcdown := True;
+  lmousetraceposition := True;
   lmouseclearonmove := False;
 end;
 
