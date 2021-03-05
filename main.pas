@@ -1032,15 +1032,11 @@ begin
 end;
 
 procedure TForm1.New1Click(Sender: TObject);
-var
-  i: integer;
 begin
   if not CheckCanClose then
     Exit;
 
   DoCreateNew;
-  for i := 176 to 176 + 47 do
-    escreen.Character[(i - 176) mod 6, (i - 176) div 6] := Chr(i);
 end;
 
 procedure TForm1.SetFileName(const fname: string);
