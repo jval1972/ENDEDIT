@@ -2374,25 +2374,27 @@ object Form1: TForm1
         Width = 200
       end>
   end
-  object Panel2: TPanel
+  object LeftPanel: TPanel
     Left = 0
     Top = 62
-    Width = 249
+    Width = 161
     Height = 521
     Align = alLeft
+    BorderWidth = 4
     Caption = ' '
     Color = 16579836
     TabOrder = 2
-    object Panel3: TPanel
-      Left = 8
-      Top = 8
-      Width = 233
-      Height = 281
+    object ToolPanel: TPanel
+      Left = 5
+      Top = 5
+      Width = 151
+      Height = 417
+      Align = alTop
       Caption = ' '
       TabOrder = 0
       object FreeDrawSpeedButton: TSpeedButton
         Left = 12
-        Top = 156
+        Top = 100
         Width = 23
         Height = 22
         Hint = 'Free Draw'
@@ -2444,7 +2446,7 @@ object Form1: TForm1
       end
       object FloodFillSpeedButton: TSpeedButton
         Left = 36
-        Top = 156
+        Top = 100
         Width = 23
         Height = 22
         Hint = 'Flood Fill'
@@ -2495,7 +2497,7 @@ object Form1: TForm1
       end
       object RectSpeedButton: TSpeedButton
         Left = 60
-        Top = 156
+        Top = 100
         Width = 23
         Height = 22
         Hint = 'Rectangle'
@@ -2547,7 +2549,7 @@ object Form1: TForm1
       end
       object FillRectSpeedButton: TSpeedButton
         Left = 84
-        Top = 156
+        Top = 100
         Width = 23
         Height = 22
         Hint = 'Filled Rectangle'
@@ -2599,7 +2601,7 @@ object Form1: TForm1
       end
       object LineSpeedButton: TSpeedButton
         Left = 108
-        Top = 156
+        Top = 100
         Width = 23
         Height = 22
         Hint = 'Line'
@@ -2651,7 +2653,7 @@ object Form1: TForm1
       end
       object EraseTextSpeedButton: TSpeedButton
         Left = 36
-        Top = 196
+        Top = 308
         Width = 23
         Height = 22
         Hint = 'Erase text'
@@ -2691,7 +2693,7 @@ object Form1: TForm1
       end
       object TextSpeedButton: TSpeedButton
         Left = 12
-        Top = 196
+        Top = 308
         Width = 23
         Height = 22
         Hint = 'Text'
@@ -2740,6 +2742,58 @@ object Form1: TForm1
           F0F0F0F0F0F0F0F0F0F0}
         Layout = blGlyphRight
         OnClick = TextSpeedButtonClick
+      end
+      object EclipseSpeedButton: TSpeedButton
+        Left = 12
+        Top = 132
+        Width = 23
+        Height = 22
+        Hint = 'Eclipse'
+        GroupIndex = 1
+        Flat = True
+        Glyph.Data = {
+          E6040000424DE604000000000000360000002800000014000000140000000100
+          180000000000B0040000130B0000130B00000000000000000000F0F0F0F0F0F0
+          F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
+          F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
+          F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
+          F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
+          F0F0F0F0717171222222020202020202020202020202222222717171F0F0F0F0
+          F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0B2B2B2151515
+          050505050505050505050505050505050505050505050505151515B2B2B2F0F0
+          F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0B3B3B308080808080817171774
+          7474C2C2C2C2C2C2C2C2C2C2C2C2747474171717080808080808B3B3B3F0F0F0
+          F0F0F0F0F0F0F0F0F0F0F0F0F0F0F01A1A1A0B0B0B393939D2D2D2F0F0F0F0F0
+          F0F0F0F0F0F0F0F0F0F0F0F0F0D2D2D23939390B0B0B1A1A1AF0F0F0F0F0F0F0
+          F0F0F0F0F0F0F0F07878780E0E0E1D1D1DD3D3D3F0F0F0F0F0F0F0F0F0F0F0F0
+          F0F0F0F0F0F0F0F0F0F0F0F0D3D3D31D1D1D0E0E0E787878F0F0F0F0F0F0F0F0
+          F0F0F0F03030301212127A7A7AF0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
+          F0F0F0F0F0F0F0F0F0F0F07A7A7A121212303030F0F0F0F0F0F0F0F0F0F0F0F0
+          151515151515C5C5C5F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
+          F0F0F0F0F0F0F0C5C5C5151515151515F0F0F0F0F0F0F0F0F0F0F0F018181818
+          1818C6C6C6F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
+          F0F0F0C6C6C6181818181818F0F0F0F0F0F0F0F0F0F0F0F01B1B1B1B1B1BC7C7
+          C7F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0C7
+          C7C71B1B1B1B1B1BF0F0F0F0F0F0F0F0F0F0F0F0151515151515C5C5C5F0F0F0
+          F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0C5C5C51515
+          15151515F0F0F0F0F0F0F0F0F0F0F0F03030301212127A7A7AF0F0F0F0F0F0F0
+          F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F07A7A7A121212303030
+          F0F0F0F0F0F0F0F0F0F0F0F07878780E0E0E1D1D1DD3D3D3F0F0F0F0F0F0F0F0
+          F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0D3D3D31D1D1D0E0E0E787878F0F0F0F0
+          F0F0F0F0F0F0F0F0F0F0F01A1A1A0B0B0B393939D2D2D2F0F0F0F0F0F0F0F0F0
+          F0F0F0F0F0F0F0F0F0D2D2D23939390B0B0B1A1A1AF0F0F0F0F0F0F0F0F0F0F0
+          F0F0F0F0F0F0F0B3B3B3080808080808171717747474C2C2C2C2C2C2C2C2C2C2
+          C2C2747474171717080808080808B3B3B3F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
+          F0F0F0F0F0F0B2B2B21515150505050505050505050505050505050505050505
+          05050505151515B2B2B2F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
+          F0F0F0F0F0F0F0F0717171222222020202020202020202020202222222717171
+          F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
+          F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
+          F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
+          F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0
+          F0F0F0F0F0F0F0F0F0F0}
+        Layout = blGlyphRight
+        OnClick = EclipseSpeedButtonClick
       end
       object BackgroundPalettePanel1: TPanel
         Left = 8
@@ -3204,8 +3258,8 @@ object Form1: TForm1
         end
       end
       object ForegroundPalettePanel1: TPanel
-        Left = 120
-        Top = 8
+        Left = 8
+        Top = 168
         Width = 105
         Height = 129
         Caption = ' '
@@ -4101,9 +4155,9 @@ object Form1: TForm1
     end
   end
   object Panel4: TPanel
-    Left = 249
+    Left = 161
     Top = 62
-    Width = 701
+    Width = 789
     Height = 521
     Align = alClient
     BevelOuter = bvNone
@@ -4112,7 +4166,7 @@ object Form1: TForm1
     object ScrollBox1: TScrollBox
       Left = 0
       Top = 0
-      Width = 701
+      Width = 789
       Height = 521
       Align = alClient
       BevelEdges = []

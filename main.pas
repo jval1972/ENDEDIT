@@ -49,7 +49,7 @@ type
   TForm1 = class(TForm)
     Panel1: TPanel;
     StatusBar1: TStatusBar;
-    Panel2: TPanel;
+    LeftPanel: TPanel;
     OpenSpeedButton1: TSpeedButton;
     PasteSpeedButton1: TSpeedButton;
     SaveSpeedButton1: TSpeedButton;
@@ -96,7 +96,7 @@ type
     RedoSpeedButton1: TSpeedButton;
     ZoomOutSpeedButton1: TSpeedButton;
     ZoomInSpeedButton1: TSpeedButton;
-    Panel3: TPanel;
+    ToolPanel: TPanel;
     BackgroundPalettePanel1: TPanel;
     BackgroundPalette1: TImage;
     CursorBlinkTimer: TTimer;
@@ -111,6 +111,7 @@ type
     LineSpeedButton: TSpeedButton;
     EraseTextSpeedButton: TSpeedButton;
     TextSpeedButton: TSpeedButton;
+    EclipseSpeedButton: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure PaintBox1Paint(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -156,6 +157,7 @@ type
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure FormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure EclipseSpeedButtonClick(Sender: TObject);
   private
     { Private declarations }
     buffer: TBitmap;
@@ -213,6 +215,7 @@ type
     procedure EditActionFillRect(const X, Y: integer);
     procedure EditActionLine(const X, Y: integer);
     procedure EditActionText(const X, Y: integer);
+    procedure EditActionEclipse(const X, Y: integer);
   public
     { Public declarations }
   end;
@@ -547,6 +550,95 @@ begin
   lcursory := Y;
 end;
 
+procedure TForm1.EditActionEclipse(const X, Y: integer);
+// midpoint ellipse algorithm
+var
+  rx, ry, xc, yc: integer;
+  dx, dy, d1, d2: single;
+  xx, yy: integer;
+
+  procedure _draw_point(const ax, ay: integer);
+  begin
+    if IsIntInRange(ax, 0, SCREENSIZEX - 1) then
+      if IsIntInRange(ay, 0, SCREENSIZEY - 1) then
+        escreen.BackgroundColor[ax, ay] := bkcolor;
+  end;
+
+begin
+  rx := abs(lmousedownx - X);
+  ry := abs(lmousedowny - Y);
+  xc := lmousedownx;
+  yc := lmousedowny;
+  xx := 0;
+  yy := ry;
+
+  // Initial decision parameter of region 1
+  d1 := (ry * ry) -
+        (rx * rx * ry) +
+        (0.25 * rx * rx);
+  dx := 2 * ry * ry * xx;
+  dy := 2 * rx * rx * yy;
+
+  // For region 1
+  while dx < dy do
+  begin
+    // Print points based on 4-way symmetry
+    _draw_point(xx + xc, yy + yc);
+    _draw_point(-xx + xc, yy + yc);
+    _draw_point(xx + xc, -yy + yc);
+    _draw_point(-xx + xc, -yy + yc);
+
+    // Checking and updating value of
+    // decision parameter based on algorithm
+    if d1 < 0 then
+    begin
+      inc(xx);
+      dx := dx + (2 * ry * ry);
+      d1 := d1 + dx + (ry * ry);
+    end
+    else
+    begin
+      inc(xx);
+      dec(yy);
+      dx := dx + (2 * ry * ry);
+      dy := dy - (2 * rx * rx);
+      d1 := d1 + dx - dy + (ry * ry);
+    end;
+  end;
+
+  // Decision parameter of region 2
+  d2 := ((ry * ry) * ((xx + 0.5) * (xx + 0.5))) +
+        ((rx * rx) * ((yy - 1) * (yy - 1))) -
+        (rx * rx * ry * ry);
+
+  // Plotting points of region 2
+  while yy >= 0 do
+  begin
+    // printing points based on 4-way symmetry
+    _draw_point(xx + xc, yy + yc);
+    _draw_point(-xx + xc, yy + yc);
+    _draw_point(xx + xc, -yy + yc);
+    _draw_point(-xx + xc, -yy + yc);
+
+    // Checking and updating parameter
+    // value based on algorithm
+    if d2 > 0 then
+    begin
+      dec(yy);
+      dy := dy - (2 * rx * rx);
+      d2 := d2 + (rx * rx) - dy;
+    end
+    else
+    begin
+      dec(yy);
+      inc(xx);
+      dx := dx + (2 * ry * ry);
+      dy := dy - (2 * rx * rx);
+      d2 := d2 + dx - dy + (rx * rx);
+    end;
+  end;
+end;
+
 procedure TForm1.LLeftMousePaintAt(const X, Y: integer);
 begin
   if not lmousedown then
@@ -564,7 +656,9 @@ begin
   else if LineSpeedButton.Down then
     EditActionLine(X, Y)
   else if lcursordown then
-    EditActionText(X, Y);
+    EditActionText(X, Y)
+  else if EclipseSpeedButton.Down then
+    EditActionEclipse(X, Y);
 end;
 
 procedure TForm1.LLeftMousePaintTo(const X, Y: integer);
@@ -1104,6 +1198,13 @@ procedure TForm1.LineSpeedButtonClick(Sender: TObject);
 begin
   lmouserecalcdown := False;
   lmousetraceposition := True;
+  lmouseclearonmove := True;
+end;
+
+procedure TForm1.EclipseSpeedButtonClick(Sender: TObject);
+begin
+  lmouserecalcdown := False;
+  lmousetraceposition := False;
   lmouseclearonmove := True;
 end;
 
