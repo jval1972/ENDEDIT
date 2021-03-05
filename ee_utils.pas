@@ -42,6 +42,8 @@ function I_VersionBuilt(fname: string = ''): string;
 
 function MinI(const a, b: Integer): Integer;
 
+function MaxI(const a, b: Integer): Integer;
+
 function CopyFile(const sname, dname: string): boolean;
 
 procedure BackupFile(const fname: string);
@@ -106,6 +108,14 @@ begin
     Result := a
   else
     Result := b;
+end;
+
+function MaxI(const a, b: Integer): Integer;
+begin
+  if a < b then
+    Result := b
+  else
+    Result := a;
 end;
 
 function CopyFile(const sname, dname: string): boolean;
