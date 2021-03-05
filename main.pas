@@ -110,6 +110,7 @@ type
     FreeDrawSpeedButton: TSpeedButton;
     FloodFillSpeedButton: TSpeedButton;
     RectSpeedButton: TSpeedButton;
+    FillRectSpeedButton: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure PaintBox1Paint(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -148,6 +149,7 @@ type
     procedure EraseTextSpeedButtonClick(Sender: TObject);
     procedure FloodFillSpeedButtonClick(Sender: TObject);
     procedure RectSpeedButtonClick(Sender: TObject);
+    procedure FillRectSpeedButtonClick(Sender: TObject);
   private
     { Private declarations }
     buffer: TBitmap;
@@ -196,6 +198,7 @@ type
     procedure EditActionEraseText(const X, Y: integer);
     procedure EditActionFloodFill(const X, Y: integer);
     procedure EditActionRect(const X, Y: integer);
+    procedure EditActionFillRect(const X, Y: integer);
   public
     { Public declarations }
   end;
@@ -491,6 +494,20 @@ begin
   end;
 end;
 
+procedure TForm1.EditActionFillRect(const X, Y: integer);
+var
+  atop, abottom, aleft, aright: integer;
+  i, j: integer;
+begin
+  aleft := MinI(lmousedownx, X);
+  aright := MaxI(lmousedownx, X);
+  atop := MinI(lmousedowny, Y);
+  abottom := MaxI(lmousedowny, Y);
+  for i := aleft to aright do
+    for j := atop to abottom do
+      escreen.BackgroundColor[i, j] := bkcolor;
+end;
+
 procedure TForm1.LLeftMousePaintAt(const X, Y: integer);
 begin
   if not lmousedown then
@@ -502,7 +519,9 @@ begin
   else if EraseTextSpeedButton.Down then
     EditActionEraseText(X, Y)
   else if RectSpeedButton.Down then
-    EditActionRect(X, Y);
+    EditActionRect(X, Y)
+  else if FillRectSpeedButton.Down then
+    EditActionFillRect(X, Y);
 end;
 
 procedure TForm1.LLeftMousePaintTo(const X, Y: integer);
@@ -984,6 +1003,12 @@ begin
 end;
 
 procedure TForm1.RectSpeedButtonClick(Sender: TObject);
+begin
+  lmouserecalcdown := False;
+  lmousetraceposition := False;
+end;
+
+procedure TForm1.FillRectSpeedButtonClick(Sender: TObject);
 begin
   lmouserecalcdown := False;
   lmousetraceposition := False;
