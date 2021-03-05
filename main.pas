@@ -109,6 +109,7 @@ type
     Panel5: TPanel;
     FreeDrawSpeedButton: TSpeedButton;
     FloodFillSpeedButton: TSpeedButton;
+    RectSpeedButton: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure PaintBox1Paint(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -146,6 +147,7 @@ type
     procedure FreeDrawSpeedButtonClick(Sender: TObject);
     procedure EraseTextSpeedButtonClick(Sender: TObject);
     procedure FloodFillSpeedButtonClick(Sender: TObject);
+    procedure RectSpeedButtonClick(Sender: TObject);
   private
     { Private declarations }
     buffer: TBitmap;
@@ -193,6 +195,7 @@ type
     procedure EditActionFreeDrawBackground(const X, Y: integer);
     procedure EditActionEraseText(const X, Y: integer);
     procedure EditActionFloodFill(const X, Y: integer);
+    procedure EditActionRect(const X, Y: integer);
   public
     { Public declarations }
   end;
@@ -467,6 +470,27 @@ begin
   end;
 end;
 
+procedure TForm1.EditActionRect(const X, Y: integer);
+var
+  atop, abottom, aleft, aright: integer;
+  i: integer;
+begin
+  aleft := MinI(lmousedownx, X);
+  aright := MaxI(lmousedownx, X);
+  atop := MinI(lmousedowny, Y);
+  abottom := MaxI(lmousedowny, Y);
+  for i := aleft to aright do
+  begin
+    escreen.BackgroundColor[i, atop] := bkcolor;
+    escreen.BackgroundColor[i, abottom] := bkcolor;
+  end;
+  for i := atop + 1 to abottom - 1 do
+  begin
+    escreen.BackgroundColor[aleft, i] := bkcolor;
+    escreen.BackgroundColor[aright, i] := bkcolor;
+  end;
+end;
+
 procedure TForm1.LLeftMousePaintAt(const X, Y: integer);
 begin
   if not lmousedown then
@@ -476,7 +500,9 @@ begin
   else if FloodFillSpeedButton.Down then
     EditActionFloodFill(X, Y)
   else if EraseTextSpeedButton.Down then
-    EditActionEraseText(X, Y);
+    EditActionEraseText(X, Y)
+  else if RectSpeedButton.Down then
+    EditActionRect(X, Y);
 end;
 
 procedure TForm1.LLeftMousePaintTo(const X, Y: integer);
@@ -954,6 +980,12 @@ end;
 procedure TForm1.FloodFillSpeedButtonClick(Sender: TObject);
 begin
   lmouserecalcdown := True;
+  lmousetraceposition := False;
+end;
+
+procedure TForm1.RectSpeedButtonClick(Sender: TObject);
+begin
+  lmouserecalcdown := False;
   lmousetraceposition := False;
 end;
 
