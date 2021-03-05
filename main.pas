@@ -143,6 +143,9 @@ type
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure ForegroundPalette1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure FreeDrawSpeedButtonClick(Sender: TObject);
+    procedure EraseTextSpeedButtonClick(Sender: TObject);
+    procedure FloodFillSpeedButtonClick(Sender: TObject);
   private
     { Private declarations }
     buffer: TBitmap;
@@ -152,11 +155,13 @@ type
     undoManager: TUndoRedoManager;
     filemenuhistory: TFileMenuHistory;
     ffilename: string;
-    escreen: TEndScreen;
+    escreen, backscreen: TEndScreen;
     zoom: integer;
     flastzoomwheel: int64;
     blink: boolean;
     lmousedown: boolean;
+    lmouserecalcdown: boolean;
+    lmousetraceposition: boolean;
     lmousedownx, lmousedowny: integer;
     lmousemovex, lmousemovey: integer;
     bkcolor, fgcolor: LongWord;
@@ -216,6 +221,8 @@ begin
   closing := False;
 
   lmousedown := False;
+  lmouserecalcdown := True;
+  lmousetraceposition := True;
   lmousedownx := 0;
   lmousedowny := 0;
   lmousemovex := 0;
@@ -234,6 +241,7 @@ begin
   flastzoomwheel := GetTickCount;
 
   escreen := TEndScreen.Create;
+  backscreen := TEndScreen.Create;
 
   blink := False;
 
@@ -333,6 +341,7 @@ begin
   fgpalbitmap.Free;
 
   escreen.Free;
+  backscreen.Free;
 end;
 
 procedure TForm1.Idle(Sender: TObject; var Done: Boolean);
@@ -481,55 +490,62 @@ begin
   if not lmousedown then
     Exit;
 
-  dx := X - lmousedownx;
-  ax := 2 * abs(dx);
-  if dx < 0 then
-    sx := -1
-  else
-    sx := 1;
-  dy := Y - lmousedowny;
-  ay := 2 * abs(dy);
-  if dy < 0 then
-    sy := -1
-  else
-    sy := 1;
-
-  curx := lmousedownx;
-  cury := lmousedowny;
-
-  if ax > ay then
+  if lmousetraceposition then
   begin
-    d := ay - ax div 2;
-    while True do
+    dx := X - lmousedownx;
+    ax := 2 * abs(dx);
+    if dx < 0 then
+      sx := -1
+    else
+      sx := 1;
+    dy := Y - lmousedowny;
+    ay := 2 * abs(dy);
+    if dy < 0 then
+      sy := -1
+    else
+      sy := 1;
+
+    curx := lmousedownx;
+    cury := lmousedowny;
+
+    if ax > ay then
     begin
-      LLeftMousePaintAt(curx, cury);
-      if curx = X then break;
-      if d >= 0 then
+      d := ay - ax div 2;
+      while True do
       begin
-        cury := cury + sy;
-        d := d - ax;
+        LLeftMousePaintAt(curx, cury);
+        if curx = X then break;
+        if d >= 0 then
+        begin
+          cury := cury + sy;
+          d := d - ax;
+        end;
+        curx := curx + sx;
+        d := d + ay;
       end;
-      curx := curx + sx;
-      d := d + ay;
+    end
+    else
+    begin
+      d := ax - ay div 2;
+      while True do
+      begin
+        LLeftMousePaintAt(curx, cury);
+        if cury = Y then break;
+        if d >= 0 then
+        begin
+          curx := curx + sx;
+          d := d - ay;
+        end;
+        cury := cury + sy;
+        d := d + ax;
+      end;
     end;
   end
   else
   begin
-    d := ax - ay div 2;
-    while True do
-    begin
-      LLeftMousePaintAt(curx, cury);
-      if cury = Y then break;
-      if d >= 0 then
-      begin
-        curx := curx + sx;
-        d := d - ay;
-      end;
-      cury := cury + sy;
-      d := d + ax;
-    end;
+    escreen.AssignTo(backscreen);
+    LLeftMousePaintAt(X, Y);
   end;
-
   Changed := True;
   InvalidatePaintBox;
 end;
@@ -540,6 +556,9 @@ begin
   if button = mbLeft then
   begin
     undoManager.SaveUndo;
+
+    backscreen.AssignTo(escreen);
+
     lmousedown := True;
     lmousedownx := ZoomValueX(X);
     lmousedowny := ZoomValueY(Y);
@@ -571,8 +590,11 @@ begin
   if lmousedown then
   begin
     LLeftMousePaintTo(lmousemovex, lmousemovey);
-    lmousedownx := ZoomValueX(X);
-    lmousedowny := ZoomValueY(Y);
+    if lmouserecalcdown then
+    begin
+      lmousedownx := ZoomValueX(X);
+      lmousedowny := ZoomValueY(Y);
+    end;
   end
 end;
 
@@ -915,6 +937,24 @@ procedure TForm1.ForegroundPalette1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   HandlePaletteImage(X, Y, ForegroundPalette1, fgpalbitmap, 'FG', fgcolor);
+end;
+
+procedure TForm1.FreeDrawSpeedButtonClick(Sender: TObject);
+begin
+  lmouserecalcdown := True;
+  lmousetraceposition := True;
+end;
+
+procedure TForm1.EraseTextSpeedButtonClick(Sender: TObject);
+begin
+  lmouserecalcdown := True;
+  lmousetraceposition := True;
+end;
+
+procedure TForm1.FloodFillSpeedButtonClick(Sender: TObject);
+begin
+  lmouserecalcdown := True;
+  lmousetraceposition := False;
 end;
 
 end.
