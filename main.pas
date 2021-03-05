@@ -119,7 +119,11 @@ type
     Panel3: TPanel;
     SpecialCharSpeedButton: TSpeedButton;
     TextColorChangeSpeedButton: TSpeedButton;
-    Shape1: TShape;
+    CharRect1SpeedButton: TSpeedButton;
+    CharRect2SpeedButton: TSpeedButton;
+    CharRect3SpeedButton: TSpeedButton;
+    CharRect4SpeedButton: TSpeedButton;
+    CharRect5SpeedButton: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure PaintBox1Paint(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -163,6 +167,7 @@ type
     procedure TextSpeedButtonClick(Sender: TObject);
     procedure TextColorChangeSpeedButtonClick(Sender: TObject);
     procedure SpecialCharSpeedButtonClick(Sender: TObject);
+    procedure CharRectSpeedButtonClick(Sender: TObject);
     procedure CursorBlinkTimerTimer(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure FormKeyDown(Sender: TObject; var Key: Word;
@@ -238,6 +243,8 @@ type
     procedure EditActionFillEclipse(const X, Y: integer);
     procedure EditActionSpecialCharacter(const X, Y: integer);
     procedure EditActionTextColorChange(const X, Y: integer);
+    procedure EditActionCharRectChange(const X, Y: integer;
+      const atopleft, atopright, abottomleft, abottomright, ahorz, avert: integer);
   public
     { Public declarations }
   end;
@@ -702,6 +709,40 @@ begin
   escreen.ForegroundColor[X, Y] := fgcolor;
 end;
 
+procedure TForm1.EditActionCharRectChange(const X, Y: integer;
+  const atopleft, atopright, abottomleft, abottomright, ahorz, avert: integer);
+var
+  atop, abottom, aleft, aright: integer;
+  i: integer;
+begin
+  aleft := MinI(lmousedownx, X);
+  aright := MaxI(lmousedownx, X);
+  atop := MinI(lmousedowny, Y);
+  abottom := MaxI(lmousedowny, Y);
+  for i := aleft + 1 to aright - 1 do
+  begin
+    escreen.ForegroundColor[i, atop] := fgcolor;
+    escreen.Character[i, atop] := Chr(ahorz);
+    escreen.ForegroundColor[i, abottom] := fgcolor;
+    escreen.Character[i, abottom] := Chr(ahorz);
+  end;
+  for i := atop + 1 to abottom - 1 do
+  begin
+    escreen.ForegroundColor[aleft, i] := fgcolor;
+    escreen.Character[aleft, i] := Chr(avert);
+    escreen.ForegroundColor[aright, i] := fgcolor;
+    escreen.Character[aright, i] := Chr(avert);
+  end;
+  escreen.ForegroundColor[aleft, atop] := fgcolor;
+  escreen.Character[aleft, atop] := Chr(atopleft);
+  escreen.ForegroundColor[aright, atop] := fgcolor;
+  escreen.Character[aright, atop] := Chr(atopright);
+  escreen.ForegroundColor[aleft, abottom] := fgcolor;
+  escreen.Character[aleft, abottom] := Chr(abottomleft);
+  escreen.ForegroundColor[aright, abottom] := fgcolor;
+  escreen.Character[aright, abottom] := Chr(abottomright);
+end;
+
 procedure TForm1.LLeftMousePaintAt(const X, Y: integer);
 begin
   if not lmousedown then
@@ -727,7 +768,17 @@ begin
   else if SpecialCharSpeedButton.Down then
     EditActionSpecialCharacter(X, Y)
   else if TextColorChangeSpeedButton.Down then
-    EditActionTextColorChange(X, Y);
+    EditActionTextColorChange(X, Y)
+  else if CharRect1SpeedButton.Down then
+    EditActionCharRectChange(X, Y, $DA, $BF, $C0, $D9, $C4, $B3)
+  else if CharRect2SpeedButton.Down then
+    EditActionCharRectChange(X, Y, $D5, $B8, $D4, $BE, $CD, $B3)
+  else if CharRect3SpeedButton.Down then
+    EditActionCharRectChange(X, Y, $D6, $B7, $D3, $BD, $C4, $BA)
+  else if CharRect4SpeedButton.Down then
+    EditActionCharRectChange(X, Y, $C9, $BB, $C8, $BC, $CD, $BA)
+  else if CharRect5SpeedButton.Down then
+    EditActionCharRectChange(X, Y, $DB, $DB, $DB, $DB, $DB, $DB);
 end;
 
 procedure TForm1.LLeftMousePaintTo(const X, Y: integer);
@@ -1357,6 +1408,13 @@ begin
   lmouserecalcdown := True;
   lmousetraceposition := True;
   lmouseclearonmove := False;
+end;
+
+procedure TForm1.CharRectSpeedButtonClick(Sender: TObject);
+begin
+  lmouserecalcdown := False;
+  lmousetraceposition := False;
+  lmouseclearonmove := True;
 end;
 
 procedure TForm1.CursorBlinkTimerTimer(Sender: TObject);
