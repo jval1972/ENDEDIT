@@ -118,6 +118,7 @@ type
     procedure SaveToStream(const strm: TStream);
     procedure LoadFromStream(const strm: TStream);
     procedure GetBitmap(const b: TBitmap; const blink: boolean);
+    procedure AssignTo(const ascreen: TEndScreen);
     property BackgroundColor[x, y: integer]: LongWord read GetBackgroundColor write SetBackgroundColor;
     property ForegroundColor[x, y: integer]: LongWord read GetForegroundColor write SetForegroundColor;
     property Blink[x, y: integer]: boolean read GetBlink write SetBlink;
@@ -357,6 +358,11 @@ begin
   end;
 
   FreeMem(buf, 640 * 200 * SizeOf(LongWord));
+end;
+
+procedure TEndScreen.AssignTo(const ascreen: TEndScreen);
+begin
+  Move(ascreen.data^, data^, SizeOf(endscreen_t));
 end;
 
 end.
