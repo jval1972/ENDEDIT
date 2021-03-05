@@ -1161,6 +1161,15 @@ begin
       needsupdate := True;
     end;
   end
+  else if key = #13 then
+  begin
+    if lcursory < SCREENSIZEY - 1 then
+    begin
+      lcursorx := 0;
+      inc(lcursory);
+      needsupdate := True;
+    end;
+  end;
 end;
 
 end.
