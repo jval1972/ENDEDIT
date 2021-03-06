@@ -6077,11 +6077,15 @@ object Form1: TForm1
     Top = 112
   end
   object OpenDialog1: TOpenDialog
+    DefaultExt = 'bin'
+    Filter = 'B800 Text (*.bin)|*.bin|All Files (*.*)|*.*'
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]
     Left = 424
     Top = 112
   end
   object SaveDialog1: TSaveDialog
+    DefaultExt = 'bin'
+    Filter = 'B800 Text (*.bin)|*.bin|All Files (*.*)|*.*'
     Options = [ofOverwritePrompt, ofHideReadOnly, ofPathMustExist, ofEnableSizing]
     Left = 384
     Top = 112
