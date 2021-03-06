@@ -100,7 +100,7 @@ Conditionals=
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=
+RunParams=F:\DelphiDoom_Release\ENDEDIT\garbage\EFFECTS.BIN
 HostApplication=
 Launcher=
 UseLauncher=0

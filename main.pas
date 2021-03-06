@@ -405,13 +405,9 @@ begin
 
   if docreate then
   begin
-    SetFileName('');
-    changed := False;
     needsupdate := True;
-    undoManager.Clear;
-  end
-  else
     DoCreateNew;
+  end;
 
   Application.OnIdle := Idle;
   Application.OnHint := Hint;
