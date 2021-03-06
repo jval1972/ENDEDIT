@@ -46,7 +46,79 @@ procedure BitmapToScreen(const bm: TBitmap; const escreen: TEndScreen;
 implementation
 
 uses
-  ee_utils;
+  ee_utils,
+  GR32_Image,
+  GR32_System,
+  GR32_RangeBars,
+  GR32,
+  GR32_Resamplers;
+
+procedure FlipBitmapVertical(const b: TBitmap);
+var
+  i, j: integer;
+  tmp: LongWord;
+  l1, l2: PLongWordArray;
+begin
+  b.PixelFormat := pf32bit;
+
+  for j := 0 to b.Height div 2 - 1 do
+  begin
+    l1 := b.ScanLine[j];
+    l2 := b.ScanLine[b.Height - 1 - j];
+    for i := 0 to b.Width - 1 do
+    begin
+      tmp := l1[i];
+      l1[i] := l2[i];
+      l2[i] := tmp;
+    end;
+  end;
+end;
+
+procedure BitmapLanczosDraw(const bm: TBitmap; const destbm: TBitmap);
+var
+  R: TKernelResampler;
+  Src, Dst: TBitmap32;
+  bmp: TBitmap;
+  bi: TBitmapInfo;
+  abitmap: HBitmap;
+begin
+  Src := TBitmap32.Create;
+  Src.Assign(bm);
+  Dst := TBitmap32.Create;
+  Dst.Assign(destbm);
+
+  R := TKernelResampler.Create(Src);
+  R.Kernel := TLanczosKernel.Create;
+  Dst.Draw(Dst.BoundsRect, Src.BoundsRect, Src);
+
+  FillChar(bi, SizeOf(bi), 0);
+  with bi.bmiHeader do
+  begin
+     biSize := SizeOf(bi.bmiHeader);
+     biWidth := Dst.Width;
+     biHeight := Dst.height;
+     biPlanes := 1;
+     biBitCount := 32;
+     biCompression := BI_RGB;
+  end;
+
+  bmp := TBitmap.Create;
+
+  aBitmap := 0;
+  try
+    aBitmap := CreateDIBitmap(GetDC(0), bi.bmiHeader, CBM_INIT,  @Dst.Bits[0], bi, DIB_RGB_COLORS);
+    bmp.handle := aBitmap;
+    destbm.Assign(bmp);
+    destbm.PixelFormat := pf32bit;
+  finally
+    DeleteObject(aBitmap);
+    bmp.Free;
+  end;
+
+  FlipBitmapVertical(destbm);
+  Src.Free;
+  Dst.Free;
+end;
 
 type
   coloritem_t = record
@@ -264,7 +336,7 @@ begin
     b.Width := SCREENSIZEX * 2;
     b.Height := SCREENSIZEY * 2;
     b.PixelFormat := pf32bit;
-    b.Canvas.StretchDraw(Rect(0, 0, b.Width, b.Height), bm);
+    BitmapLanczosDraw(bm, b);
     for x := 0 to SCREENSIZEX - 1 do
       for y := 0 to SCREENSIZEY - 1 do
       begin

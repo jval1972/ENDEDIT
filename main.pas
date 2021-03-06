@@ -471,7 +471,12 @@ begin
       bm.LoadFromClipboardFormat(CF_BITMAP, ClipBoard.GetAsHandle(cf_Bitmap), 0);
       undoManager.SaveUndo;
       Changed := True;
-      BitmapToScreen(bm, escreen, ta_diher);
+      Screen.Cursor := crHourglass;
+      try
+        BitmapToScreen(bm, escreen, ta_diher);
+      finally
+        Screen.Cursor := crDefault;
+      end;
     finally
       bm.Free;
     end;
