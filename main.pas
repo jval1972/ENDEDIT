@@ -140,6 +140,7 @@ type
     Export1: TMenuItem;
     N6: TMenuItem;
     SavePictureDialog1: TSavePictureDialog;
+    Onlinedocumentation1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure PaintBox1Paint(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -208,6 +209,7 @@ type
     procedure Cut1Click(Sender: TObject);
     procedure PaintBoxPopupMenu1Popup(Sender: TObject);
     procedure Export1Click(Sender: TObject);
+    procedure Onlinedocumentation1Click(Sender: TObject);
   private
     { Private declarations }
     buffer, exportbuffer: TBitmap;
@@ -1812,6 +1814,11 @@ begin
   end
   else
     exportbuffer.SaveToFile(imgfname);
+end;
+
+procedure TForm1.Onlinedocumentation1Click(Sender: TObject);
+begin
+  I_GoToWebPage('https://endedit.sourceforge.io');
 end;
 
 end.

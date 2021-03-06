@@ -50,6 +50,8 @@ procedure BackupFile(const fname: string);
 
 function MkShortName(const fname: string): string;
 
+procedure I_GoToWebPage(const cmd: string);
+
 implementation
 
 uses
@@ -169,6 +171,21 @@ begin
   Result := '...' + Result;
   for i := 3 downto 1 do
     Result := fname[i] + Result;
+end;
+
+type
+  shellexecute_t = function (hWnd: HWND; Operation, FileName, Parameters,
+    Directory: PChar; ShowCmd: Integer): HINST; stdcall;
+
+procedure I_GoToWebPage(const cmd: string);
+var
+  shellexecutefunc: shellexecute_t;
+  inst: THandle;
+begin
+  inst := LoadLibrary('shell32');
+  shellexecutefunc := GetProcAddress(inst, 'ShellExecuteA');
+  shellexecutefunc(0, 'open', PChar(cmd), nil, nil, SW_SHOWNORMAL);
+  FreeLibrary(inst);
 end;
 
 end.

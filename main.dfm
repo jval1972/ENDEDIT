@@ -6072,6 +6072,12 @@ object Form1: TForm1
     end
     object Help1: TMenuItem
       Caption = 'Help'
+      object Onlinedocumentation1: TMenuItem
+        Caption = 'Online documentation'
+        Hint = 'Displays online help'
+        ShortCut = 112
+        OnClick = Onlinedocumentation1Click
+      end
       object About1: TMenuItem
         Caption = 'About'
         Hint = 'Display version information'
