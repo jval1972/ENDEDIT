@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 111
-  Top = 79
+  Left = 102
+  Top = 72
   Width = 956
   Height = 720
   Caption = 'ENDTEXT Editor'

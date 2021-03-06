@@ -465,8 +465,8 @@ begin
   Redo1.Enabled := undoManager.CanRedo;
   UndoSpeedButton1.Enabled := undoManager.CanUndo;
   RedoSpeedButton1.Enabled := undoManager.CanRedo;
-  Paste1.Enabled := Clipboard.HasFormat(CF_BITMAP);
-  PasteSpeedButton1.Enabled := Clipboard.HasFormat(CF_BITMAP);
+  Paste1.Enabled := Clipboard.HasFormat(CF_BITMAP) or Clipboard.HasFormat(CF_TEXT);
+  PasteSpeedButton1.Enabled := Clipboard.HasFormat(CF_BITMAP) or Clipboard.HasFormat(CF_TEXT);
   ZoomInSpeedButton1.Enabled := zoom < MAXZOOM;
   ZoomOutSpeedButton1.Enabled := zoom > MINZOOM;
   if needsupdate then
@@ -479,6 +479,10 @@ end;
 procedure TForm1.Paste1Click(Sender: TObject);
 var
   bm: TBitmap;
+  lst: TStringList;
+  s: string;
+  tx, ty: integer;
+  i, j: integer;
 begin
   if Clipboard.HasFormat(CF_BITMAP) then
   begin
@@ -500,6 +504,50 @@ begin
       bm.Free;
     end;
     InvalidatePaintBox;
+  end
+  else if Clipboard.HasFormat(CF_TEXT) then
+  begin
+    lst := TStringList.Create;
+    try
+      lst.Text := ClipBoard.AsText;
+      if lcursordown then
+      begin
+        tx := lcursorx;
+        ty := lcursory;
+      end
+      else
+      begin
+        tx := 0;
+        ty := 0;
+      end;
+      undoManager.SaveUndo;
+      Changed := True;
+      for i := 0 to lst.Count - 1 do
+      begin
+        if ty >= SCREENSIZEY then
+          Break;
+        s := lst.Strings[i];
+        if Length(s) > SCREENSIZEX then
+          SetLength(s, SCREENSIZEX);
+        for j := 1 to Length(s) do
+        begin
+          escreen.ForegroundColor[tx, ty] := fgcolor;
+          escreen.Character[tx, ty] := s[j];
+          inc(tx);
+          if tx >= SCREENSIZEX then
+            Break;
+        end;
+        if i < lst.Count - 1 then
+        begin
+          tx := 0;
+          inc(ty);
+        end;
+      end;
+      lcursorx := GetIntInRange(tx, 0, SCREENSIZEX - 1);
+      lcursory := GetIntInRange(ty, 0, SCREENSIZEY - 1);
+    finally
+      lst.Free;
+    end;
   end;
 end;
 
@@ -562,7 +610,7 @@ end;
 
 procedure TForm1.Edit1Click(Sender: TObject);
 begin
-  Paste1.Enabled := Clipboard.HasFormat(CF_BITMAP);
+  Paste1.Enabled := Clipboard.HasFormat(CF_BITMAP) or Clipboard.HasFormat(CF_TEXT);
   Undo1.Enabled := undoManager.CanUndo;
   Redo1.Enabled := undoManager.CanRedo;
 end;
@@ -1766,7 +1814,7 @@ procedure TForm1.PaintBoxPopupMenu1Popup(Sender: TObject);
 begin
   Undo2.Enabled := undoManager.CanUndo;
   Redo2.Enabled := undoManager.CanRedo;
-  Paste2.Enabled := Clipboard.HasFormat(CF_BITMAP);
+  Paste2.Enabled := Clipboard.HasFormat(CF_BITMAP) or Clipboard.HasFormat(CF_TEXT);
 end;
 
 procedure TForm1.Export1Click(Sender: TObject);
