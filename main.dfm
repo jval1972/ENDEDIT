@@ -5980,6 +5980,15 @@ object Form1: TForm1
         Hint = 'Save the current file to disk under a new name'
         OnClick = SaveAs1Click
       end
+      object N6: TMenuItem
+        Caption = '-'
+      end
+      object Export1: TMenuItem
+        Caption = 'Export'
+        Hint = 'Export current screen to an image file on disk'
+        ShortCut = 16453
+        OnClick = Export1Click
+      end
       object N1: TMenuItem
         Caption = '-'
       end
@@ -6123,5 +6132,14 @@ object Form1: TForm1
       Caption = 'Paste'
       OnClick = Paste1Click
     end
+  end
+  object SavePictureDialog1: TSavePictureDialog
+    DefaultExt = 'png'
+    Filter = 
+      'Portable Network Graphics (*.png)|*.png|JPEG Image File (*.jpg)|' +
+      '*.jpg|JPEG Image File (*.jpeg)|*.jpeg|Bitmaps (*.bmp)|*.bmp'
+    Options = [ofOverwritePrompt, ofHideReadOnly, ofPathMustExist, ofEnableSizing]
+    Left = 544
+    Top = 112
   end
 end

@@ -137,6 +137,9 @@ type
     Paste2: TMenuItem;
     BlinkOnSpeedButton: TSpeedButton;
     BlinkOffSpeedButton: TSpeedButton;
+    Export1: TMenuItem;
+    N6: TMenuItem;
+    SavePictureDialog1: TSavePictureDialog;
     procedure FormCreate(Sender: TObject);
     procedure PaintBox1Paint(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -204,6 +207,7 @@ type
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure Cut1Click(Sender: TObject);
     procedure PaintBoxPopupMenu1Popup(Sender: TObject);
+    procedure Export1Click(Sender: TObject);
   private
     { Private declarations }
     buffer, exportbuffer: TBitmap;
@@ -279,6 +283,7 @@ type
     procedure EditActionCharRectChange(const X, Y: integer;
       const atopleft, atopright, abottomleft, abottomright, ahorz, avert: integer);
     procedure EditActionBlink(const X, Y: integer; const ablink: Boolean);
+    procedure DoExportImage(const imgfname: string);
   public
     { Public declarations }
   end;
@@ -1763,6 +1768,49 @@ begin
   Undo2.Enabled := undoManager.CanUndo;
   Redo2.Enabled := undoManager.CanRedo;
   Paste2.Enabled := Clipboard.HasFormat(CF_BITMAP);
+end;
+
+procedure TForm1.Export1Click(Sender: TObject);
+var
+  imgfname: string;
+begin
+  if SavePictureDialog1.Execute then
+  begin
+    Screen.Cursor := crHourglass;
+    try
+      imgfname := SavePictureDialog1.FileName;
+      BackupFile(imgfname);
+      DoExportImage(imgfname);
+    finally
+      Screen.Cursor := crDefault;
+    end;
+  end;
+end;
+
+procedure TForm1.DoExportImage(const imgfname: string);
+var
+  png: TPngObject;
+  jpg: TJPEGImage;
+  ext: string;
+begin
+  CreateExportBuffer;
+  ext := UpperCase(ExtractFileExt(imgfname));
+  if ext = '.PNG' then
+  begin
+    png := TPngObject.Create;
+    png.Assign(exportbuffer);
+    png.SaveToFile(imgfname);
+    png.Free;
+  end
+  else if (ext = '.JPG') or (ext = '.JPEG') then
+  begin
+    jpg := TJPEGImage.Create;
+    jpg.Assign(exportbuffer);
+    jpg.SaveToFile(imgfname);
+    jpg.Free;
+  end
+  else
+    exportbuffer.SaveToFile(imgfname);
 end;
 
 end.
