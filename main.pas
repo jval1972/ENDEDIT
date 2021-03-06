@@ -206,7 +206,7 @@ type
     procedure PaintBoxPopupMenu1Popup(Sender: TObject);
   private
     { Private declarations }
-    buffer: TBitmap;
+    buffer, exportbuffer: TBitmap;
     drawbuffer: TBitmap;
     changed: boolean;
     needsupdate: boolean;
@@ -244,6 +244,7 @@ type
     procedure LLeftMousePaintAt(const X, Y: integer);
     procedure LLeftMousePaintTo(const X, Y: integer);
     procedure CreateDrawBuffer;
+    procedure CreateExportBuffer;
     procedure DoPrepareEditor;
     procedure DoCreateNew;
     procedure DoLoadFromStream(const s: TStream);
@@ -322,6 +323,11 @@ begin
   buffer.Width := 640;
   buffer.Height := 200;
   buffer.PixelFormat := pf32bit;
+
+  exportbuffer := TBitmap.Create;
+  exportbuffer.Width := 640;
+  exportbuffer.Height := 400;
+  exportbuffer.PixelFormat := pf32bit;
 
   drawbuffer := TBitmap.Create;
   drawbuffer.Width := 640;
@@ -434,6 +440,7 @@ begin
   filemenuhistory.Free;
 
   buffer.Free;
+  exportbuffer.Free;
   drawbuffer.Free;
 
   bkpalbitmap.Free;
@@ -517,7 +524,8 @@ end;
 
 procedure TForm1.Copy1Click(Sender: TObject);
 begin
-  Clipboard.Assign(buffer);
+  CreateExportBuffer;
+  Clipboard.Assign(exportbuffer);
 end;
 
 procedure TForm1.Open1Click(Sender: TObject);
@@ -1051,6 +1059,12 @@ begin
   drawbuffer.Canvas.StretchDraw(Rect(0, 0, drawbuffer.Width, drawbuffer.Height), buffer);
   DrawGrid;
   DrawCursor;
+end;
+
+procedure TForm1.CreateExportBuffer;
+begin
+  escreen.GetBitmap(buffer, blink);
+  exportbuffer.Canvas.StretchDraw(Rect(0, 0, exportbuffer.Width, exportbuffer.Height), buffer);
 end;
 
 procedure TForm1.Undo1Click(Sender: TObject);
