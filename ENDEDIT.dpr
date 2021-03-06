@@ -45,7 +45,8 @@ uses
   ee_undo in 'ee_undo.pas',
   ee_defs in 'ee_defs.pas',
   ee_screen in 'ee_screen.pas',
-  ee_dosfont in 'ee_dosfont.pas';
+  ee_dosfont in 'ee_dosfont.pas',
+  ee_textart in 'ee_textart.pas';
 
 {$R *.res}
 

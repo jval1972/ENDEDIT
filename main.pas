@@ -283,7 +283,7 @@ implementation
 {$R *.dfm}
 
 uses
-  ee_utils, ee_defs;
+  ee_utils, ee_defs, ee_textart;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
@@ -456,10 +456,18 @@ begin
 end;
 
 procedure TForm1.Paste1Click(Sender: TObject);
+var
+  bm: TBitmap;
 begin
   if Clipboard.HasFormat(CF_BITMAP) then
   begin
-    buffer.LoadFromClipboardFormat(CF_BITMAP, ClipBoard.GetAsHandle(cf_Bitmap), 0);
+    bm := TBitmap.Create;
+    try
+      bm.LoadFromClipboardFormat(CF_BITMAP, ClipBoard.GetAsHandle(cf_Bitmap), 0);
+      BitmapToScreen(bm, escreen, ta_diher);
+    finally
+      bm.Free;
+    end;
     InvalidatePaintBox;
   end;
 end;
