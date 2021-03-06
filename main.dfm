@@ -5,8 +5,8 @@ object Form1: TForm1
   Height = 720
   Caption = 'ENDTEXT Editor'
   Color = clBtnFace
-  Constraints.MinHeight = 720
-  Constraints.MinWidth = 860
+  Constraints.MinHeight = 680
+  Constraints.MinWidth = 800
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -4727,7 +4727,7 @@ object Form1: TForm1
       end
       object SpecialCharactersPanel1: TPanel
         Left = 8
-        Top = 528
+        Top = 464
         Width = 104
         Height = 160
         Caption = ' '
