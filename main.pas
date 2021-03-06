@@ -117,13 +117,16 @@ type
     SpecialCharactersPanel1: TPanel;
     SpecialCharacters1: TImage;
     Panel3: TPanel;
-    SpecialCharSpeedButton: TSpeedButton;
+    SpecialCharSpeedButton1: TSpeedButton;
     TextColorChangeSpeedButton: TSpeedButton;
     CharRect1SpeedButton: TSpeedButton;
     CharRect2SpeedButton: TSpeedButton;
     CharRect3SpeedButton: TSpeedButton;
     CharRect4SpeedButton: TSpeedButton;
     CharRect5SpeedButton: TSpeedButton;
+    SpecialCharSpeedButton2: TSpeedButton;
+    SpecialCharSelectSpeedButton1: TSpeedButton;
+    SpecialCharSelectSpeedButton2: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure PaintBox1Paint(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -166,7 +169,8 @@ type
     procedure LineSpeedButtonClick(Sender: TObject);
     procedure TextSpeedButtonClick(Sender: TObject);
     procedure TextColorChangeSpeedButtonClick(Sender: TObject);
-    procedure SpecialCharSpeedButtonClick(Sender: TObject);
+    procedure SpecialCharSpeedButton1Click(Sender: TObject);
+    procedure SpecialCharSpeedButton2Click(Sender: TObject);
     procedure CharRectSpeedButtonClick(Sender: TObject);
     procedure CursorBlinkTimerTimer(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
@@ -174,8 +178,19 @@ type
       Shift: TShiftState);
     procedure EclipseSpeedButtonClick(Sender: TObject);
     procedure FilledEclipseSpeedButtonClick(Sender: TObject);
-    procedure SpecialCharacters1MouseDown(Sender: TObject;
+    procedure SpecialCharSelectSpeedButton1MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure SpecialCharSelectSpeedButton1MouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure SpecialCharSelectSpeedButton1MouseMove(Sender: TObject; Shift: TShiftState; X,
+      Y: Integer);
+    procedure SpecialCharSelectSpeedButton2MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure SpecialCharSelectSpeedButton2MouseMove(Sender: TObject;
+      Shift: TShiftState; X, Y: Integer);
+    procedure SpecialCharSelectSpeedButton2MouseUp(Sender: TObject;
+      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure Cut1Click(Sender: TObject);
   private
     { Private declarations }
     buffer: TBitmap;
@@ -200,7 +215,8 @@ type
     bkcolor, fgcolor: LongWord;
     bkpalbitmap, fgpalbitmap: TBitmap;
     specialcharbitmap: TBitmap;
-    specialchar: Char;
+    specialchar1: Char;
+    specialchar2: Char;
     specialcharLastClick: TPoint;
     closing: boolean;
     procedure Idle(Sender: TObject; var Done: Boolean);
@@ -229,7 +245,8 @@ type
     procedure HandlePaletteImage(const X, Y: integer; const Palette1: TImage;
       const palbitmap: TBitmap; const tx: string; var cc: LongWord);
     procedure HandleCharactersImage(const X, Y: integer; const Characters1: TImage;
-      const charbitmap: TBitmap; var ch: Char);
+      const SpecialCharSpeedButton: TSpeedButton; const charbitmap: TBitmap;
+      const makebk: boolean; var ch: Char);
     function lcursordown: boolean;
     procedure EditActionFreeDrawBackground(const X, Y: integer);
     procedure EditActionEraseText(const X, Y: integer);
@@ -241,7 +258,8 @@ type
     procedure midpointellipse(const X, Y: integer; const filled: boolean);
     procedure EditActionEclipse(const X, Y: integer);
     procedure EditActionFillEclipse(const X, Y: integer);
-    procedure EditActionSpecialCharacter(const X, Y: integer);
+    procedure EditActionSpecialCharacter1(const X, Y: integer);
+    procedure EditActionSpecialCharacter2(const X, Y: integer);
     procedure EditActionTextColorChange(const X, Y: integer);
     procedure EditActionCharRectChange(const X, Y: integer;
       const atopleft, atopright, abottomleft, abottomright, ahorz, avert: integer);
@@ -347,7 +365,8 @@ begin
 
   specialcharbitmap := TBitmap.Create;
   specialcharbitmap.Assign(SpecialCharacters1.Picture.Bitmap);
-  HandleCharactersImage(1, 1, SpecialCharacters1, specialcharbitmap, specialchar);
+  HandleCharactersImage(1, 1, SpecialCharacters1, SpecialCharSpeedButton1, specialcharbitmap, True, specialchar1);
+  HandleCharactersImage(1, 1, SpecialCharacters1, SpecialCharSpeedButton2, specialcharbitmap, False, specialchar2);
 
   doCreate := True;
   if ParamCount > 0 then
@@ -698,10 +717,17 @@ begin
   midpointellipse(X, Y, True);
 end;
 
-procedure TForm1.EditActionSpecialCharacter(const X, Y: integer);
+procedure TForm1.EditActionSpecialCharacter1(const X, Y: integer);
+begin
+  escreen.BackgroundColor[X, Y] := bkcolor;
+  escreen.ForegroundColor[X, Y] := fgcolor;
+  escreen.Character[X, Y] := specialchar1;
+end;
+
+procedure TForm1.EditActionSpecialCharacter2(const X, Y: integer);
 begin
   escreen.ForegroundColor[X, Y] := fgcolor;
-  escreen.Character[X, Y] := specialchar;
+  escreen.Character[X, Y] := specialchar2;
 end;
 
 procedure TForm1.EditActionTextColorChange(const X, Y: integer);
@@ -765,8 +791,10 @@ begin
     EditActionEclipse(X, Y)
   else if FilledEclipseSpeedButton.Down then
     EditActionFillEclipse(X, Y)
-  else if SpecialCharSpeedButton.Down then
-    EditActionSpecialCharacter(X, Y)
+  else if SpecialCharSpeedButton1.Down then
+    EditActionSpecialCharacter1(X, Y)
+  else if SpecialCharSpeedButton2.Down then
+    EditActionSpecialCharacter2(X, Y)
   else if TextColorChangeSpeedButton.Down then
     EditActionTextColorChange(X, Y)
   else if CharRect1SpeedButton.Down then
@@ -1268,7 +1296,8 @@ begin
 end;
 
 procedure TForm1.HandleCharactersImage(const X, Y: integer; const Characters1: TImage;
-  const charbitmap: TBitmap; var ch: Char);
+  const SpecialCharSpeedButton: TSpeedButton; const charbitmap: TBitmap;
+  const makebk: boolean; var ch: Char);
 var
   px, py: integer;
   C, C2: TCanvas;
@@ -1300,12 +1329,18 @@ begin
       if C.Pixels[ix, iy] = RGB(0, 0, 0) then
       begin
         C.Pixels[ix, iy] := fgcolor;
-        C2.Pixels[ix - dx + 2, iy - dy + 2] := fgcolor;
+        if makebk then
+          C2.Pixels[ix - dx + 2, iy - dy + 2] := fgcolor
+        else
+          C2.Pixels[ix - dx + 2, iy - dy + 2] := RGB(0, 0, 0);
       end
       else
       begin
         C.Pixels[ix, iy] := bkcolor;
-        C2.Pixels[ix - dx + 2, iy - dy + 2] := bkcolor;
+        if makebk then
+          C2.Pixels[ix - dx + 2, iy - dy + 2] := bkcolor
+        else
+          C2.Pixels[ix - dx + 2, iy - dy + 2] := RGB(240, 240, 240);
       end;
 
   C.Pen.Style := psSolid;
@@ -1322,14 +1357,16 @@ procedure TForm1.BackgroundPalette1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   HandlePaletteImage(X, Y, BackgroundPalette1, bkpalbitmap, 'BK', bkcolor);
-  HandleCharactersImage(specialcharLastClick.X, specialcharLastClick.Y, SpecialCharacters1, specialcharbitmap, specialchar);
+  HandleCharactersImage(specialcharLastClick.X, specialcharLastClick.Y, SpecialCharacters1, SpecialCharSpeedButton1, specialcharbitmap, True, specialchar1);
+  HandleCharactersImage(specialcharLastClick.X, specialcharLastClick.Y, SpecialCharacters1, SpecialCharSpeedButton2, specialcharbitmap, False, specialchar2);
 end;
 
 procedure TForm1.ForegroundPalette1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   HandlePaletteImage(X, Y, ForegroundPalette1, fgpalbitmap, 'FG', fgcolor);
-  HandleCharactersImage(specialcharLastClick.X, specialcharLastClick.Y, SpecialCharacters1, specialcharbitmap, specialchar);
+  HandleCharactersImage(specialcharLastClick.X, specialcharLastClick.Y, SpecialCharacters1, SpecialCharSpeedButton1, specialcharbitmap, True, specialchar1);
+  HandleCharactersImage(specialcharLastClick.X, specialcharLastClick.Y, SpecialCharacters1, SpecialCharSpeedButton2, specialcharbitmap, False, specialchar2);
 end;
 
 procedure TForm1.FreeDrawSpeedButtonClick(Sender: TObject);
@@ -1403,7 +1440,14 @@ begin
   lmouseclearonmove := False;
 end;
 
-procedure TForm1.SpecialCharSpeedButtonClick(Sender: TObject);
+procedure TForm1.SpecialCharSpeedButton1Click(Sender: TObject);
+begin
+  lmouserecalcdown := True;
+  lmousetraceposition := True;
+  lmouseclearonmove := False;
+end;
+
+procedure TForm1.SpecialCharSpeedButton2Click(Sender: TObject);
 begin
   lmouserecalcdown := True;
   lmousetraceposition := True;
@@ -1556,10 +1600,88 @@ begin
   end;
 end;
 
-procedure TForm1.SpecialCharacters1MouseDown(Sender: TObject;
+procedure TForm1.SpecialCharSelectSpeedButton1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  HandleCharactersImage(X, Y, SpecialCharacters1, specialcharbitmap, specialchar);
+  SpecialCharSpeedButton1.Down := True;
+  SpecialCharSpeedButton1.OnClick(Sender);
+  SpecialCharSelectSpeedButton1.Down := True;
+  SpecialCharactersPanel1.Left := SpecialCharSpeedButton1.Left;
+  SpecialCharactersPanel1.Top := SpecialCharSpeedButton1.Top + SpecialCharSpeedButton1.Height;
+  SpecialCharactersPanel1.BringToFront;
+  SpecialCharactersPanel1.Visible := True;
+end;
+
+procedure TForm1.SpecialCharSelectSpeedButton1MouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  SpecialCharactersPanel1.Visible := False;
+  SpecialCharSelectSpeedButton1.Down := False;
+end;
+
+procedure TForm1.SpecialCharSelectSpeedButton1MouseMove(Sender: TObject; Shift: TShiftState;
+  X, Y: Integer);
+var
+  p: TPoint;
+begin
+  if SpecialCharactersPanel1.Visible then
+  begin
+    p.X := X;
+    p.Y := Y;
+    p := SpecialCharSelectSpeedButton1.ClientToScreen(p);
+    p := SpecialCharacters1.ScreenToClient(p);
+    HandleCharactersImage(p.X, p.Y, SpecialCharacters1, SpecialCharSpeedButton1, specialcharbitmap, True, specialchar1);
+  end
+  else
+    SpecialCharSelectSpeedButton1.Down := False;
+end;
+
+procedure TForm1.SpecialCharSelectSpeedButton2MouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  SpecialCharSpeedButton2.Down := True;
+  SpecialCharSpeedButton2.OnClick(Sender);
+  SpecialCharSelectSpeedButton2.Down := True;
+  SpecialCharactersPanel1.Left := SpecialCharSpeedButton2.Left;
+  SpecialCharactersPanel1.Top := SpecialCharSpeedButton2.Top + SpecialCharSpeedButton2.Height;
+  SpecialCharactersPanel1.BringToFront;
+  SpecialCharactersPanel1.Visible := True;
+end;
+
+procedure TForm1.SpecialCharSelectSpeedButton2MouseMove(Sender: TObject;
+  Shift: TShiftState; X, Y: Integer);
+var
+  p: TPoint;
+begin
+  if SpecialCharactersPanel1.Visible then
+  begin
+    p.X := X;
+    p.Y := Y;
+    p := SpecialCharSelectSpeedButton2.ClientToScreen(p);
+    p := SpecialCharacters1.ScreenToClient(p);
+    HandleCharactersImage(p.X, p.Y, SpecialCharacters1, SpecialCharSpeedButton2, specialcharbitmap, False, specialchar2);
+  end
+  else
+    SpecialCharSelectSpeedButton2.Down := False;
+end;
+
+procedure TForm1.SpecialCharSelectSpeedButton2MouseUp(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  SpecialCharactersPanel1.Visible := False;
+  SpecialCharSelectSpeedButton2.Down := False;
+end;
+
+procedure TForm1.Cut1Click(Sender: TObject);
+var
+  x, y: integer;
+begin
+  Clipboard.Assign(buffer);
+  undoManager.SaveUndo;
+  Changed := True;
+  for x := 0 to SCREENSIZEX - 1 do
+    for y := 0 to SCREENSIZEY - 1 do
+      escreen.BackgroundColor[x, y] := 0;
 end;
 
 end.
