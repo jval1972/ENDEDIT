@@ -127,6 +127,13 @@ type
     SpecialCharSpeedButton2: TSpeedButton;
     SpecialCharSelectSpeedButton1: TSpeedButton;
     SpecialCharSelectSpeedButton2: TSpeedButton;
+    PaintBoxPopupMenu1: TPopupMenu;
+    Undo2: TMenuItem;
+    Redo2: TMenuItem;
+    N5: TMenuItem;
+    Cut2: TMenuItem;
+    Copy2: TMenuItem;
+    Paste2: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure PaintBox1Paint(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -191,6 +198,7 @@ type
     procedure SpecialCharSelectSpeedButton2MouseUp(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure Cut1Click(Sender: TObject);
+    procedure PaintBoxPopupMenu1Popup(Sender: TObject);
   private
     { Private declarations }
     buffer: TBitmap;
@@ -1682,6 +1690,13 @@ begin
   for x := 0 to SCREENSIZEX - 1 do
     for y := 0 to SCREENSIZEY - 1 do
       escreen.BackgroundColor[x, y] := 0;
+end;
+
+procedure TForm1.PaintBoxPopupMenu1Popup(Sender: TObject);
+begin
+  Undo2.Enabled := undoManager.CanUndo;
+  Redo2.Enabled := undoManager.CanRedo;
+  Paste2.Enabled := Clipboard.HasFormat(CF_BITMAP);
 end;
 
 end.

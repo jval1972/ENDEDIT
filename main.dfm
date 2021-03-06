@@ -5915,6 +5915,7 @@ object Form1: TForm1
         Cursor = crCross
         Constraints.MinHeight = 32
         Constraints.MinWidth = 32
+        PopupMenu = PaintBoxPopupMenu1
         OnMouseDown = PaintBox1MouseDown
         OnMouseMove = PaintBox1MouseMove
         OnMouseUp = PaintBox1MouseUp
@@ -5923,8 +5924,8 @@ object Form1: TForm1
     end
   end
   object MainMenu1: TMainMenu
-    Left = 465
-    Top = 113
+    Left = 464
+    Top = 112
     object File1: TMenuItem
       Caption = 'File'
       Hint = 'Open an image from disk'
@@ -6048,23 +6049,51 @@ object Form1: TForm1
   object Timer1: TTimer
     Interval = 500
     OnTimer = Timer1Timer
-    Left = 289
-    Top = 105
+    Left = 304
+    Top = 112
   end
   object OpenDialog1: TOpenDialog
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]
-    Left = 425
+    Left = 424
     Top = 112
   end
   object SaveDialog1: TSaveDialog
     Options = [ofOverwritePrompt, ofHideReadOnly, ofPathMustExist, ofEnableSizing]
-    Left = 385
+    Left = 384
     Top = 112
   end
   object CursorBlinkTimer: TTimer
     Interval = 300
     OnTimer = CursorBlinkTimerTimer
-    Left = 337
-    Top = 110
+    Left = 344
+    Top = 112
+  end
+  object PaintBoxPopupMenu1: TPopupMenu
+    OnPopup = PaintBoxPopupMenu1Popup
+    Left = 504
+    Top = 112
+    object Undo2: TMenuItem
+      Caption = 'Undo'
+      OnClick = Undo1Click
+    end
+    object Redo2: TMenuItem
+      Caption = 'Redo'
+      OnClick = Redo1Click
+    end
+    object N5: TMenuItem
+      Caption = '-'
+    end
+    object Cut2: TMenuItem
+      Caption = 'Cut'
+      OnClick = Cut1Click
+    end
+    object Copy2: TMenuItem
+      Caption = 'Copy'
+      OnClick = Copy1Click
+    end
+    object Paste2: TMenuItem
+      Caption = 'Paste'
+      OnClick = Paste1Click
+    end
   end
 end
