@@ -33,7 +33,8 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, ComCtrls, Buttons, Clipbrd, ExtDlgs, pngimage, xTGA, zBitmap,
-  Menus, ImgList, jpeg, StdCtrls, ee_undo, ee_filemenuhistory, ee_screen;
+  Menus, ImgList, jpeg, StdCtrls, ee_undo, ee_filemenuhistory, ee_screen,
+  ee_textart;
 
 const
   MINZOOM = 0;
@@ -231,6 +232,7 @@ type
     specialchar2: Char;
     specialcharLastClick: TPoint;
     closing: boolean;
+    textartmethod: textartmethod_t;
     procedure Idle(Sender: TObject; var Done: Boolean);
     procedure Hint(Sender: TObject);
     procedure UpdateEnable;
@@ -288,7 +290,7 @@ implementation
 {$R *.dfm}
 
 uses
-  ee_utils, ee_defs, ee_textart;
+  ee_utils, ee_defs, frm_imgconvertmethod;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
@@ -368,6 +370,8 @@ begin
   GridButton1.Down := opt_showgrid;
   zoom := GetIntInRange(opt_zoom, MINZOOM, MAXZOOM);
 
+  textartmethod := textartmethod_t(GetIntInRange(opt_textartmethod, 0, Ord(NUMTEXTARTMETHOD) - 1));
+
   bkpalbitmap := TBitmap.Create;
   bkpalbitmap.Assign(BackgroundPalette1.Picture.Bitmap);
   HandlePaletteImage(BackgroundPalette1.Width - 1, BackgroundPalette1.Height - 1, BackgroundPalette1, bkpalbitmap, 'BK', bkcolor);
@@ -423,6 +427,8 @@ begin
   stringtobigstring(filemenuhistory.PathStringIdx(9), @opt_filemenuhistory9);
   opt_showgrid := GridButton1.Down;
   opt_zoom := zoom;
+  opt_textartmethod := Ord(textartmethod);
+
   ee_SaveSettingsToFile(ChangeFileExt(ParamStr(0), '.ini'));
 
   filemenuhistory.Free;
@@ -469,13 +475,16 @@ begin
     bm := TBitmap.Create;
     try
       bm.LoadFromClipboardFormat(CF_BITMAP, ClipBoard.GetAsHandle(cf_Bitmap), 0);
-      undoManager.SaveUndo;
-      Changed := True;
-      Screen.Cursor := crHourglass;
-      try
-        BitmapToScreen(bm, escreen, ta_extendedspecialchars); //ta_specialchars); //ta_diher);
-      finally
-        Screen.Cursor := crDefault;
+      if ChooseImgConvertMethod(textartmethod) then
+      begin
+        Screen.Cursor := crHourglass;
+        undoManager.SaveUndo;
+        Changed := True;
+        try
+          BitmapToScreen(bm, escreen, textartmethod);
+        finally
+          Screen.Cursor := crDefault;
+        end;
       end;
     finally
       bm.Free;
