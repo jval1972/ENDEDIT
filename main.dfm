@@ -3342,6 +3342,30 @@ object Form1: TForm1
         OnMouseMove = SpecialCharSelectSpeedButton2MouseMove
         OnMouseUp = SpecialCharSelectSpeedButton2MouseUp
       end
+      object BlinkOnSpeedButton: TSpeedButton
+        Left = 12
+        Top = 404
+        Width = 93
+        Height = 22
+        Hint = 'Set Text Blinking ON'
+        GroupIndex = 1
+        Caption = 'Blinking ON'
+        Flat = True
+        Layout = blGlyphRight
+        OnClick = BlinkOnSpeedButtonClick
+      end
+      object BlinkOffSpeedButton: TSpeedButton
+        Left = 12
+        Top = 428
+        Width = 93
+        Height = 22
+        Hint = 'Set Text Blinking OFF'
+        GroupIndex = 1
+        Caption = 'Blinking OFF'
+        Flat = True
+        Layout = blGlyphRight
+        OnClick = BlinkOffSpeedButtonClick
+      end
       object BackgroundPalettePanel1: TPanel
         Left = 8
         Top = 8

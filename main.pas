@@ -134,6 +134,8 @@ type
     Cut2: TMenuItem;
     Copy2: TMenuItem;
     Paste2: TMenuItem;
+    BlinkOnSpeedButton: TSpeedButton;
+    BlinkOffSpeedButton: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure PaintBox1Paint(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -179,6 +181,8 @@ type
     procedure SpecialCharSpeedButton1Click(Sender: TObject);
     procedure SpecialCharSpeedButton2Click(Sender: TObject);
     procedure CharRectSpeedButtonClick(Sender: TObject);
+    procedure BlinkOnSpeedButtonClick(Sender: TObject);
+    procedure BlinkOffSpeedButtonClick(Sender: TObject);
     procedure CursorBlinkTimerTimer(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure FormKeyDown(Sender: TObject; var Key: Word;
@@ -271,6 +275,7 @@ type
     procedure EditActionTextColorChange(const X, Y: integer);
     procedure EditActionCharRectChange(const X, Y: integer;
       const atopleft, atopright, abottomleft, abottomright, ahorz, avert: integer);
+    procedure EditActionBlink(const X, Y: integer; const ablink: Boolean);
   public
     { Public declarations }
   end;
@@ -464,6 +469,8 @@ begin
     bm := TBitmap.Create;
     try
       bm.LoadFromClipboardFormat(CF_BITMAP, ClipBoard.GetAsHandle(cf_Bitmap), 0);
+      undoManager.SaveUndo;
+      Changed := True;
       BitmapToScreen(bm, escreen, ta_diher);
     finally
       bm.Free;
@@ -785,6 +792,11 @@ begin
   escreen.Character[aright, abottom] := Chr(abottomright);
 end;
 
+procedure TForm1.EditActionBlink(const X, Y: integer; const ablink: Boolean);
+begin
+  escreen.Blink[X, Y] := ablink;
+end;
+
 procedure TForm1.LLeftMousePaintAt(const X, Y: integer);
 begin
   if not lmousedown then
@@ -822,7 +834,11 @@ begin
   else if CharRect4SpeedButton.Down then
     EditActionCharRectChange(X, Y, $C9, $BB, $C8, $BC, $CD, $BA)
   else if CharRect5SpeedButton.Down then
-    EditActionCharRectChange(X, Y, $DB, $DB, $DB, $DB, $DB, $DB);
+    EditActionCharRectChange(X, Y, $DB, $DB, $DB, $DB, $DB, $DB)
+  else if BlinkOnSpeedButton.Down then
+    EditActionBlink(X, Y, True)
+  else if BlinkOffSpeedButton.Down then
+    EditActionBlink(X, Y, False);
 end;
 
 procedure TForm1.LLeftMousePaintTo(const X, Y: integer);
@@ -1475,6 +1491,20 @@ begin
   lmouserecalcdown := False;
   lmousetraceposition := False;
   lmouseclearonmove := True;
+end;
+
+procedure TForm1.BlinkOnSpeedButtonClick(Sender: TObject);
+begin
+  lmouserecalcdown := True;
+  lmousetraceposition := True;
+  lmouseclearonmove := False;
+end;
+
+procedure TForm1.BlinkOffSpeedButtonClick(Sender: TObject);
+begin
+  lmouserecalcdown := True;
+  lmousetraceposition := True;
+  lmouseclearonmove := False;
 end;
 
 procedure TForm1.CursorBlinkTimerTimer(Sender: TObject);
