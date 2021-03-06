@@ -473,7 +473,7 @@ begin
       Changed := True;
       Screen.Cursor := crHourglass;
       try
-        BitmapToScreen(bm, escreen, ta_diher);
+        BitmapToScreen(bm, escreen, ta_extendedspecialchars); //ta_specialchars); //ta_diher);
       finally
         Screen.Cursor := crDefault;
       end;

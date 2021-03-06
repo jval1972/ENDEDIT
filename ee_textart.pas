@@ -37,7 +37,8 @@ type
     ta_background_only,
     ta_background_foreground,
     ta_diher,
-    ta_specialchars
+    ta_specialchars,
+    ta_extendedspecialchars
   );
 
 procedure BitmapToScreen(const bm: TBitmap; const escreen: TEndScreen;
@@ -223,16 +224,27 @@ const
   NUMDIHERELEMENTS = 5;
   DIHERCHARS: array[0..NUMDIHERELEMENTS - 1] of Char = (' ', Chr($B0), Chr($B1), Chr($B2), Chr($DB));
   DIHERWEIGHTS: array[0..NUMDIHERELEMENTS - 1] of single = (1.0, 0.75, 0.5, 0.25, 0.0);
+const
+  NUMSPECIALCHARS = 6;
+  NUMEXTENDEDSPECIALCHARS = NUMSPECIALCHARS + 9;
+  SPECIALCHARS: array[0..NUMEXTENDEDSPECIALCHARS - 1] of Char = (
+    Chr($DB), Chr($DC), Chr($DD), Chr($DC), Chr($DF), ' ',
+    Chr($DA), Chr($BF), Chr($C0), Chr($D9), Chr($C1), Chr($C2), Chr($C3), Chr($B4), Chr($C5)
+  );
+  SPECIALCHARSROVERS: array[0..NUMEXTENDEDSPECIALCHARS - 1] of string[4] = (
+    'FFFF', 'BBFF', 'FBFB', 'BFBF', 'FFBB', 'BBBB',
+    'BBBf', 'BBfB', 'BfBB', 'fBBB', 'ffBB', 'BBff', 'BfBf', 'fBfB', 'ffff'
+  );
 var
   r1, g1, b1: integer;
   r2, g2, b2: integer;
   r3, g3, b3: integer;
   r4, g4, b4: integer;
   cc: LongWord;
-  mindist: integer;
+  dist, mindist: integer;
   rr, gg, bb: integer;
   idx: integer;
-  i, j, k: integer;
+  i, j, k, l: integer;
   dlist: TStringList;
   ch: char;
   w1, w2: single;
@@ -241,6 +253,10 @@ var
   dr2, dg2, db2: integer;
   bkcolor, fgcolor: LongWord;
   IC: TColorItemClass;
+  ccs: array[1..4] of LongWord;
+  bestbkcolor: LongWord;
+  bestfgcolor: LongWord;
+  numspecials: integer;
 begin
   GetRGB(c1, r1, g1, b1);
   GetRGB(c2, r2, g2, b2);
@@ -319,7 +335,80 @@ begin
     finally
       dlist.Free;
     end;
+    Exit;
   end;
+
+  if method in [ta_specialchars, ta_extendedspecialchars] then
+  begin
+    if method = ta_specialchars then
+      numspecials := NUMSPECIALCHARS
+    else
+      numspecials := NUMEXTENDEDSPECIALCHARS;
+
+    ccs[1] := c1;
+    ccs[2] := c2;
+    ccs[3] := c3;
+    ccs[4] := c4;
+
+    bestbkcolor := screencolors[0];
+    bestfgcolor := screencolors[0];
+    mindist := MAXINT;
+    ch := SPECIALCHARS[0];
+
+    for i := 0 to NUMBACKCOLORS - 1 do
+    begin
+      bkcolor := screencolors[i];
+      GetRGB(bkcolor, dr1, dg1, db1);
+      for j := 0 to NUMFRONTCOLORS - 1 do
+        if i <> j then
+        begin
+          fgcolor := screencolors[j];
+          GetRGB(fgcolor, dr2, dg2, db2);
+          for k := 0 to numspecials - 1 do
+          begin
+            dist := 0;
+            for l := 1 to 4 do
+            begin
+              GetRGB(ccs[l], r1, g1, b1);
+              if SPECIALCHARSROVERS[k][l] = 'F' then
+              begin
+                r1 := r1 - dr2;
+                g1 := g1 - dg2;
+                b1 := b1 - db2;
+              end
+              else if SPECIALCHARSROVERS[k][l] = 'f' then
+              begin
+                r1 := r1 - (dr1 + dr2) div 2;
+                g1 := g1 - (dg1 + dg2) div 2;
+                b1 := b1 - (db1 + db2) div 2;
+              end
+              else
+              begin
+                r1 := r1 - dr1;
+                g1 := g1 - dg1;
+                b1 := b1 - db1;
+              end;
+              dist := dist + r1 * r1 + g1 * g1 + b1 * b1;
+            end;
+
+            if (dist < mindist) or ((dist = mindist) and (SPECIALCHARS[k] = ' ')) then
+            begin
+              mindist := dist;
+              bestbkcolor := bkcolor;
+              bestfgcolor := fgcolor;
+              ch := SPECIALCHARS[k];
+            end;
+          end;
+        end
+      end;
+
+      item.bkcolor := bestbkcolor;
+      item.fgcolor := bestfgcolor;
+      item.ch := ch;
+    Exit;
+  end;
+
+
 
 end;
 
