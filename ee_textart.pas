@@ -36,9 +36,19 @@ type
   textartmethod_t = (
     ta_background_only,
     ta_background_foreground,
-    ta_diher,
+    ta_dither,
     ta_specialchars,
-    ta_extendedspecialchars
+    ta_extendedspecialchars,
+    NUMTEXTARTMETHOD
+  );
+
+const
+  TEXTMETHODNAMES: array[0..Ord(NUMTEXTARTMETHOD) - 1] of string[64] = (
+    'Background only',
+    'Background & Foreground',
+    'Dithering',
+    'Use Special Characters',
+    'Use Extended Special Characters'
   );
 
 procedure BitmapToScreen(const bm: TBitmap; const escreen: TEndScreen;
@@ -293,7 +303,7 @@ begin
     Exit;
   end;
 
-  if method = ta_diher then
+  if method = ta_dither then
   begin
     rr := (r1 + r2 + r3 + r4) div 4;
     gg := (g1 + g2 + g3 + g4) div 4;
