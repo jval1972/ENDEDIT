@@ -25,6 +25,7 @@
 //  E-Mail: jimmyvalavanis@yahoo.gr
 //  Site  : https://sourceforge.net/projects/endedit/
 //------------------------------------------------------------------------------
+
 unit ee_textart;
 
 interface
