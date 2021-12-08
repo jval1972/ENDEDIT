@@ -74,7 +74,7 @@ type
 implementation
 
 uses GR32, GR32_Resamplers;
-                        
+
 {$IFDEF COMPILER2005_UP}
 var
   GSplashScreen     : HBITMAP;

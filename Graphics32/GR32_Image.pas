@@ -416,7 +416,7 @@ type
   private
     FCentered: Boolean;
     FScrollBarSize: Integer;
-    FScrollBarVisibility: TScrollBarVisibility;    
+    FScrollBarVisibility: TScrollBarVisibility;
     FScrollBars: TIVScrollProperties;
     FSizeGrip: TSizeGripStyle;
     FOnScroll: TNotifyEvent;
@@ -457,7 +457,7 @@ type
     property Centered: Boolean read FCentered write SetCentered default True;
     property ScrollBars: TIVScrollProperties read FScrollBars write SetScrollBars;
     property SizeGrip: TSizeGripStyle read FSizeGrip write SetSizeGrip default sgAuto;
-    property OverSize: Integer read FOverSize write SetOverSize;    
+    property OverSize: Integer read FOverSize write SetOverSize;
     property OnScroll: TNotifyEvent read FOnScroll write FOnScroll;
   end;
 
@@ -466,7 +466,7 @@ type
     property Anchors;
     property AutoSize;
     property Bitmap;
-    property BitmapAlign;    
+    property BitmapAlign;
     property Centered;
     property Color;
     property Constraints;
@@ -497,7 +497,7 @@ type
     property OnDragOver;
     property OnEndDrag;
     property OnGDIOverlay;
-    property OnInitStages; 
+    property OnInitStages;
     property OnKeyDown;
     property OnKeyPress;
     property OnKeyUp;
@@ -984,7 +984,7 @@ begin
       // no invalid rects available? Invalidate the whole client area
       InvalidateRect(Handle, nil, False);
   end;
-  
+
   {$IFDEF FPC}
   { On FPC we need to specify the name of the ancestor here }
   inherited WMPaint(Message);
@@ -2511,7 +2511,7 @@ begin
       OffsetVert := -VScroll.Position + ScaledOversize;
   end;
   InvalidateCache;
-  EndUpdate;    
+  EndUpdate;
   Changed;
 end;
 

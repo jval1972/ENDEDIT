@@ -738,7 +738,7 @@ begin
       begin
         C := GetSample(P.X, P.Y);
         D := Intensity(ColorSub(C, CLast));
-        EMMS;        
+        EMMS;
         if D < Diff then
         begin
           NewDir := LEFT[Dir];
@@ -755,7 +755,7 @@ begin
       begin
         C := GetSample(P.X, P.Y);
         D := Intensity(ColorSub(C, CLast));
-        EMMS;        
+        EMMS;
         if D < Diff then
         begin
           NewDir := RIGHT[Dir];

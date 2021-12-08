@@ -189,15 +189,15 @@ begin
 
   loc.locType := cmPathBasedProfile;
   loc.u.pathLoc.path := STR_GenericRGBProfilePath;
-  
+
   status := CMOpenProfile(FProfile, loc);
-  
+
   if status <> noErr then raise Exception.Create('Couldn''t create the generic profile');
-  
+
   { Creates a generic color space }
-  
+
   FColorSpace := CGColorSpaceCreateWithPlatformColorSpace(FProfile);
-  
+
   if FColorSpace = nil then raise Exception.Create('Couldn''t create the generic RGB color space');
 end;
 
@@ -215,7 +215,7 @@ begin
   { Closes the profile }
 
   CMCloseProfile(FProfile);
-  
+
   inherited;
 end;
 
@@ -275,7 +275,7 @@ begin
 
   if Assigned(FBits) then System.FreeMem(FBits);
   FBits := nil;
-  
+
   if Assigned(FContext) then CGContextRelease(FContext);
   FContext := nil;
 end;
@@ -389,7 +389,7 @@ begin
     WriteLn('[TLCLBackend.DrawTo]',
      ' Self: ', IntToHex(PtrUInt(Self), 8));
   {$ENDIF}
-  
+
   DstRect.Left   := DstX;
   DstRect.Top    := DstY;
   DstRect.Right  := FOwner.Width + DstX;
@@ -426,7 +426,7 @@ begin
   original := CGBitmapContextCreateImage(FContext);
   subsection := CGImageCreateWithImageInRect(original, CGSrcRect);
   CGImageRelease(original);
-  
+
   { We need to make adjustments to the CTM so the painting is done correctly }
   CGContextSaveGState(ExternalContext);
   try
@@ -441,7 +441,7 @@ begin
     { reset the CTM to the old values }
     CGContextRestoreGState(ExternalContext);
   end;
-  
+
   // Release the subsection
   CGImageRelease(subsection);
 end;
@@ -470,7 +470,7 @@ begin
     WriteLn('[TLCLBackend.Textout with ClipRect]', ' Self: ',
       IntToHex(PtrUInt(Self), 8));
   {$ENDIF}
-  
+
   if not Assigned(FCanvas) then GetCanvas;
 
   UpdateFont;
@@ -485,7 +485,7 @@ begin
     WriteLn('[TLCLBackend.Textout with Flags]',
      ' Self: ', IntToHex(PtrUInt(Self), 8));
   {$ENDIF}
-  
+
   if not Assigned(FCanvas) then GetCanvas;
 
   UpdateFont;
@@ -624,7 +624,7 @@ begin
 
     FCanvas.Font := FFont;
   end;
-  
+
   Result := FCanvas;
 
   {$IFDEF VerboseGR32Carbon}

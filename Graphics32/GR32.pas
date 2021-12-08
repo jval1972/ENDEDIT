@@ -1397,7 +1397,7 @@ begin
   R := (Color32 and $00FF0000) shr 16;
   G := (Color32 and $0000FF00) shr 8;
   B := Color32 and $000000FF;
-end; 
+end;
 
 function Color32Components(R, G, B, A: Boolean): TColor32Components;
 const
@@ -1626,7 +1626,7 @@ begin
   begin
     Result := Gray32(Trunc(V));
     Exit;
-  end;  
+  end;
 
   H := H - Floor(H);
   Tmp := 6 * H - Floor(6 * H);
@@ -2532,7 +2532,7 @@ begin
     FBackend.OnChanging := BackendChangingHandler;
 
     EndUpdate;
-    
+
     FBackend.Changed;
     Changed;
   end;

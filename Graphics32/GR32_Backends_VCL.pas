@@ -633,7 +633,7 @@ constructor TGDIMemoryBackend.Create;
 begin
   inherited;
   FillChar(FBitmapInfo, SizeOf(TBitmapInfo), 0);
-  with FBitmapInfo.bmiHeader do 
+  with FBitmapInfo.bmiHeader do
   begin
     biSize := SizeOf(TBitmapInfoHeader);
     biPlanes := 1;
@@ -649,7 +649,7 @@ procedure TGDIMemoryBackend.InitializeSurface(NewWidth, NewHeight: Integer;
   ClearBuffer: Boolean);
 begin
   inherited;
-  with FBitmapInfo.bmiHeader do 
+  with FBitmapInfo.bmiHeader do
   begin
     biWidth := NewWidth;
     biHeight := -NewHeight;
@@ -685,7 +685,7 @@ begin
       Bitmap := CreateDIBSection(DeviceContext, FBitmapInfo, DIB_RGB_COLORS,
         Buffer, 0, 0);
 
-      if Bitmap <> 0 then 
+      if Bitmap <> 0 then
       begin
         OldObject := SelectObject(DeviceContext, Bitmap);
         try
@@ -754,7 +754,7 @@ begin
   end;
 end;
 
-procedure TGDIMemoryBackend.DrawTo(hDst: HDC; 
+procedure TGDIMemoryBackend.DrawTo(hDst: HDC;
   const DstRect, SrcRect: TRect);
 var
   Bitmap        : HBITMAP;

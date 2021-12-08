@@ -273,7 +273,7 @@ begin
         // delete file if exists
         if FileExists(MapFileName) then
           DeleteFile(MapFileName);
-          
+
         MapFileName := '';
       end;
     end;

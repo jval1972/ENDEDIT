@@ -51,7 +51,7 @@ uses
   GR32, SysUtils, Classes, TypInfo;
 
 const
-  BUCKET_MASK = $FF;               
+  BUCKET_MASK = $FF;
   BUCKET_COUNT = BUCKET_MASK + 1;  // 256 buckets by default
 
 type
@@ -74,7 +74,7 @@ type
   end;
   TPointerBucketArray = array[0..BUCKET_MASK] of TPointerBucket;
 
-  { TPointerMap } 
+  { TPointerMap }
   { Associative pointer map
     Inspired by TBucketList, which is not available on D5/CB5, it is
     reimplemented from scratch, simple, optimized and light-weight.

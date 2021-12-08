@@ -34,7 +34,7 @@ unit GR32_VectorMaps;
  * ***** END LICENSE BLOCK ***** *)
 
 interface
-     
+
 {$I GR32.inc}
 
 uses

@@ -337,10 +337,10 @@ begin
     Alpha := S[I].A;
     with D[I] do
     begin
-      R := Alpha;  
-      G := Alpha;  
-      B := Alpha;  
-    end;  
+      R := Alpha;
+      G := Alpha;
+      B := Alpha;
+    end;
   end;
   Dst.Changed;
 end;
@@ -391,7 +391,7 @@ begin
   CheckParams(Dst, Src);
   D := @Dst.Bits[0];
   S := @Src.Bits[0];
-  
+
   if PreserveAlpha then
     for I := 0 to Src.Width * Src.Height - 1 do
     begin
@@ -404,7 +404,7 @@ begin
       D^ := Gray32(Intensity(S^));
       Inc(S); Inc(D);
     end;
-    
+
   Dst.Changed;
 end;
 
@@ -431,7 +431,7 @@ begin
       Inc(S);
       Inc(D);
     end;
-    
+
   Dst.Changed;
 end;
 

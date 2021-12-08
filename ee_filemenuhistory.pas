@@ -227,7 +227,7 @@ begin
   fname := Trim(FileName);
   if fname = '' then
     Exit;
-    
+
   idx := fPaths.IndexOf(fname);
   if idx = -1 then
   begin

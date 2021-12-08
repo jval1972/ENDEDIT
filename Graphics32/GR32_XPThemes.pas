@@ -158,7 +158,7 @@ begin
   begin
     if not IsLibrary then
       FreeLibrary(DllHandle);
-      
+
     DllHandle := 0;
     OpenThemeData := nil;
     CloseThemeData := nil;

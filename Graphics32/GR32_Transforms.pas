@@ -1356,7 +1356,7 @@ begin
   FPiW := (Pi / (FSrcRect.Right - FSrcRect.Left));
   FPiH := (Pi / (FSrcRect.Bottom - FSrcRect.Top));
   FBP := FBloatPower * Max(FSrcRect.Right - FSrcRect.Left, FSrcRect.Bottom - FSrcRect.Top);
-  TransformValid := True;  
+  TransformValid := True;
 end;
 
 procedure TBloatTransformation.ReverseTransformFloat(DstX, DstY: TFloat;
@@ -1415,7 +1415,7 @@ begin
       Faw := 1 / Faw;
     Faw := Faw * FMinR
   end;
-  TransformValid := True;  
+  TransformValid := True;
 end;
 
 procedure TFishEyeTransformation.ReverseTransformFloat(DstX, DstY: TFloat;
@@ -1670,7 +1670,7 @@ end;
 procedure TDisturbanceTransformation.SetDisturbance(const Value: TFloat);
 begin
   FDisturbance := Value;
-  Changed;  
+  Changed;
 end;
 
 constructor TRadialDistortionTransformation.Create;
@@ -1984,7 +1984,7 @@ begin
   FScalingFixed.Y := Fixed(Sy);
   FScalingFloat.X := Sx;
   FScalingFloat.Y := Sy;
-  Changed;  
+  Changed;
 end;
 
 procedure TRemapTransformation.SetMappingRect(Rect: TFloatRect);

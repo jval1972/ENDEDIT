@@ -599,7 +599,7 @@ begin
       X := X + GlyphMetrics.gmCellIncX;
       {$IFDEF USEKERNING}
       if i < TextLen then NextCharValue := Ord(Text[i + 1]);
-      for J := 0 to KerningPairCount - 1 do 
+      for J := 0 to KerningPairCount - 1 do
       begin
         if (KerningPairs^[J].wFirst = CharValue) and
           (KerningPairs^[J].wSecond = NextCharValue) then

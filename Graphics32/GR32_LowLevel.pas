@@ -631,7 +631,7 @@ begin
   TestSwap(A, B); // now A = min(A,B) and B = max(A, B)
   if A < 0 then
     A := 0;
-  if B >= Size then 
+  if B >= Size then
     B := Size - 1;
   Result := B >= A;
 end;
@@ -639,9 +639,9 @@ end;
 function TestClip(var A, B: Integer; const Start, Stop: Integer): Boolean;
 begin
   TestSwap(A, B); // now A = min(A,B) and B = max(A, B)
-  if A < Start then 
+  if A < Start then
     A := Start;
-  if B >= Stop then 
+  if B >= Stop then
     B := Stop - 1;
   Result := B >= A;
 end;
@@ -735,9 +735,9 @@ end;
 function Clamp(Value, Max: Integer): Integer;
 {$IFDEF USENATIVECODE}
 begin
-  if Value > Max then 
+  if Value > Max then
     Result := Max
-  else if Value < 0 then 
+  else if Value < 0 then
     Result := 0
   else
     Result := Value;
@@ -765,11 +765,11 @@ end;
 function Clamp(Value, Min, Max: Integer): Integer;
 {$IFDEF USENATIVECODE}
 begin
-  if Value > Max then 
+  if Value > Max then
     Result := Max
   else if Value < Min then
     Result := Min
-  else 
+  else
     Result := Value;
 {$ELSE}
 {$IFDEF FPC} assembler; nostackframe; {$ENDIF}

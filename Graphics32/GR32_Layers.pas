@@ -1041,7 +1041,7 @@ begin
   begin
     ForceUpdate := True;
     LayerOptions := LayerOptions and not LOB_VISIBLE;
-    ForceUpdate := False;    
+    ForceUpdate := False;
   end;
 end;
 
@@ -1166,7 +1166,7 @@ var
   ScaleX, ScaleY: TFloat;
   Width: Integer;
 begin
-  if Bitmap.Empty then Exit;  
+  if Bitmap.Empty then Exit;
 
   if Assigned(FLayerCollection) and ((FLayerOptions and LOB_NO_UPDATE) = 0) then
   begin
@@ -1660,7 +1660,7 @@ procedure TRubberbandLayer.SetChildLayer(Value: TPositionedLayer);
 begin
   if Assigned(FChildLayer) then
     RemoveNotification(FChildLayer);
-    
+
   FChildLayer := Value;
   if Assigned(Value) then
   begin

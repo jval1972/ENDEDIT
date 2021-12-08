@@ -69,7 +69,7 @@ end;
 
 function IsIntInRange(const x: Integer; const amin, amax: Integer): Boolean;
 begin
-  Result := (x >= amin) and (x <= amax); 
+  Result := (x >= amin) and (x <= amax);
 end;
 
 function I_VersionBuilt(fname: string = ''): string;
