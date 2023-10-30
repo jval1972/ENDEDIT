@@ -32,7 +32,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, ee_screen, StdCtrls;
+  Dialogs, ExtCtrls, StrUtils, ee_screen, StdCtrls;
 
 type
   TForm1 = class(TForm)
@@ -55,7 +55,7 @@ type
     procedure Memo1DblClick(Sender: TObject);
   private
     { Private declarations }
-    screen: TEndScreen;
+    escreen: TEndScreen;
     screenloaded: boolean;
     blink: boolean;
     mpoint: TPoint;
@@ -74,7 +74,7 @@ implementation
 {$R *.dfm}
 
 uses
-  ev_wadreader;
+  ev_wadreader, ee_utils;
 
 function findparam(const parm: string): integer;
 var
@@ -92,6 +92,7 @@ end;
 procedure TForm1.FormCreate(Sender: TObject);
 var
   x: integer;
+  i: integer;
   f: TFileStream;
   src: Pointer;
   ms: TMemoryStream;
@@ -102,7 +103,7 @@ var
   bufsize: integer;
 begin
   PaintBox1.Align := alClient;
-  screen := TEndScreen.Create;
+  escreen := TEndScreen.Create;
 
   screenloaded := False;
 
@@ -110,16 +111,19 @@ begin
     windowstate := wsMaximized;
   x := findparam('-width');
   if (x > 0) and (x < ParamCount) then
-    Width := StrToIntDef(ParamStr(x + 1), Width);
+    Width := GetIntInRange(StrToIntDef(ParamStr(x + 1), Width), 100, Screen.Width);
   x := findparam('-height');
   if (x > 0) and (x < ParamCount) then
-    Height := StrToIntDef(ParamStr(x + 1), Height);
+    Height := GetIntInRange(StrToIntDef(ParamStr(x + 1), Height), 100, Screen.Height);
   x := findparam('-top');
   if (x > 0) and (x < ParamCount) then
-    Top := StrToIntDef(ParamStr(x + 1), Top);
+    Top := GetIntInRange(StrToIntDef(ParamStr(x + 1), Top), 0, Screen.Height - 100);
   x := findparam('-left');
   if (x > 0) and (x < ParamCount) then
-    Left := StrToIntDef(ParamStr(x + 1), Left);
+    Left := GetIntInRange(StrToIntDef(ParamStr(x + 1), Left), 0, Screen.Width - 100);
+  x := findparam('-interval');
+  if (x > 0) and (x < ParamCount) then
+    Timer1.Interval := GetIntInRange(StrToIntDef(ParamStr(x + 1), Timer1.Interval), 20, 5000);
 
   DoubleBuffered := True;
   blink := False;
@@ -128,13 +132,13 @@ begin
   mousedown := False;
 
   x := findparam('-file');
-  if (x > 0) and (x < ParamCount) then
+  if (x >= 0) and (x < ParamCount) then
   begin
     if FileExists(ParamStr(x + 1)) then
     begin
       f := TFileStream.Create(ParamStr(x + 1), fmOpenRead or fmShareDenyWrite);
       try
-        screen.LoadFromStream(f);
+        escreen.LoadFromStream(f);
         screenloaded := True;
       finally
         f.Free;
@@ -154,7 +158,7 @@ begin
       try
         ms.Write(src^, SizeOf(endscreen_t));
         ms.Position := 0;
-        screen.LoadFromStream(ms);
+        escreen.LoadFromStream(ms);
         screenloaded := True;
       finally
         ms.Free;
@@ -165,7 +169,15 @@ begin
     Exit;
 
   x := findparam('-wadfile');
-  if (x > 0) and (x < ParamCount) then
+  if x = -1 then
+    for i := 1 to ParamCount do
+      if UpperCase(RightStr(ParamStr(i), 4)) = '.WAD' then
+      begin
+        x := i - 1;
+        break;
+      end;
+
+  if (x >= 0) and (x < ParamCount) then
   begin
     if FileExists(ParamStr(x + 1)) then
     begin
@@ -194,7 +206,7 @@ begin
               try
                 ms.Write(buf^, SizeOf(endscreen_t));
                 ms.Position := 0;
-                screen.LoadFromStream(ms);
+                escreen.LoadFromStream(ms);
                 screenloaded := True;
               finally
                 ms.Free;
@@ -217,7 +229,7 @@ end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
-  screen.Free;
+  escreen.Free;
 end;
 
 procedure TForm1.PaintBox1DblClick(Sender: TObject);
@@ -236,7 +248,7 @@ var
   bm: TBitmap;
 begin
   bm := TBitmap.Create;
-  screen.GetBitmap(bm, blink);
+  escreen.GetBitmap(bm, blink);
   PaintBox1.Canvas.StretchDraw(Rect(0, 0, PaintBox1.Width, PaintBox1.Height), bm);
   bm.Free;
 end;
