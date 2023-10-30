@@ -3,7 +3,6 @@ object Form1: TForm1
   Top = 235
   Width = 1044
   Height = 540
-  Caption = 'EndViewForm'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -1090,6 +1089,9 @@ object Form1: TForm1
     0000000000000000000000000000000000000000000000000000000000000000
     000000000000000000000000000000000000000000000000000000000000}
   OldCreateOrder = False
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   PixelsPerInch = 96
   TextHeight = 13
   object PaintBox1: TPaintBox
@@ -1097,5 +1099,13 @@ object Form1: TForm1
     Top = 112
     Width = 105
     Height = 105
+    OnDblClick = PaintBox1DblClick
+    OnPaint = PaintBox1Paint
+  end
+  object Timer1: TTimer
+    Interval = 500
+    OnTimer = Timer1Timer
+    Left = 288
+    Top = 72
   end
 end

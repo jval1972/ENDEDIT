@@ -1,6 +1,8 @@
 program ENDVIEW;
 
 uses
+  FastMM4 in 'FastMM4.pas',
+  FastMM4Messages in 'FastMM4Messages.pas',
   Forms,
   viewermain in 'viewermain.pas' {Form1},
   ee_screen in 'ee_screen.pas',
