@@ -100,7 +100,7 @@ Conditionals=
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=-file G:\DelphiDoom_Release\ENDEDIT\garbage\effects.bin -left 1
+RunParams=G:\DelphiDoom_Release\DelphiDoom_Src\bin\Doom\doom2.wad -fullscreen
 HostApplication=
 Launcher=
 UseLauncher=0

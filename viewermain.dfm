@@ -1108,9 +1108,9 @@ object Form1: TForm1
     OnPaint = PaintBox1Paint
   end
   object Memo1: TMemo
-    Left = 368
-    Top = 112
-    Width = 585
+    Left = 248
+    Top = 104
+    Width = 705
     Height = 265
     Color = clBlack
     Font.Charset = GREEK_CHARSET
@@ -1126,10 +1126,11 @@ object Form1: TForm1
       'Usage:'
       ''
       
-        'Open from WAD file                  -wadfile wadfilename [-entry' +
-        ' entryname]'
+        'Open from WAD file                  [-wadfile] wadfilename [-ent' +
+        'ry entryname]'
       'Open single file                    -file filename'
       'Open in fullscreen                  -fullscreen'
+      'Set the blinking interval           -interval XXX'
       'Set display window width            -width XXX'
       'Set display window height           -height XXX'
       'Set display window left             -left XXX'
@@ -1138,8 +1139,12 @@ object Form1: TForm1
       
         '-Setting top, left, width & height in fullscreen mode has no eff' +
         'ect.'
+      
+        '-Setting top, left, width & height outside the screen will leave' +
+        ' visible part on screen.'
       '-Double click or press any key to close.'
-      '-Click and trag to move (no effect in fullscreen.')
+      '-Click and drag to move (no effect in fullscreen).'
+      '-Settings are not saved, every run uses default values.')
     ParentFont = False
     TabOrder = 0
     Visible = False
