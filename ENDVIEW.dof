@@ -90,8 +90,8 @@ MaxStackSize=1048576
 ImageBase=4194304
 ExeDescription=
 [Directories]
-OutputDir=
-UnitOutputDir=
+OutputDir=..\bin
+UnitOutputDir=..\dcu
 PackageDLLOutputDir=
 PackageDCPOutputDir=
 SearchPath=
@@ -100,7 +100,7 @@ Conditionals=
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=-file G:\DelphiDoom_Release\ENDEDIT\garbage\doomsnake.bin
+RunParams=-file G:\DelphiDoom_Release\ENDEDIT\garbage\effects.bin -left 1
 HostApplication=
 Launcher=
 UseLauncher=0

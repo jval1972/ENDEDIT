@@ -1,8 +1,10 @@
 object Form1: TForm1
   Left = 162
   Top = 235
-  Width = 1044
-  Height = 540
+  BorderIcons = []
+  BorderStyle = bsNone
+  ClientHeight = 501
+  ClientWidth = 1028
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -1100,7 +1102,49 @@ object Form1: TForm1
     Width = 105
     Height = 105
     OnDblClick = PaintBox1DblClick
+    OnMouseDown = PaintBox1MouseDown
+    OnMouseMove = PaintBox1MouseMove
+    OnMouseUp = PaintBox1MouseUp
     OnPaint = PaintBox1Paint
+  end
+  object Memo1: TMemo
+    Left = 368
+    Top = 112
+    Width = 585
+    Height = 265
+    Color = clBlack
+    Font.Charset = GREEK_CHARSET
+    Font.Color = clWhite
+    Font.Height = -11
+    Font.Name = 'Courier'
+    Font.Style = []
+    Lines.Strings = (
+      'ENDVIEW v.1.0'
+      'A viewer for B800 texts.'
+      '(c) 2023, Jim Valavanis'
+      ''
+      'Usage:'
+      ''
+      
+        'Open from WAD file                  -wadfile wadfilename [-entry' +
+        ' entryname]'
+      'Open single file                    -file filename'
+      'Open in fullscreen                  -fullscreen'
+      'Set display window width            -width XXX'
+      'Set display window height           -height XXX'
+      'Set display window left             -left XXX'
+      'Set display window top              -top XXX'
+      ''
+      
+        '-Setting top, left, width & height in fullscreen mode has no eff' +
+        'ect.'
+      '-Double click or press any key to close.'
+      '-Click and trag to move (no effect in fullscreen.')
+    ParentFont = False
+    TabOrder = 0
+    Visible = False
+    WordWrap = False
+    OnDblClick = Memo1DblClick
   end
   object Timer1: TTimer
     Interval = 500
